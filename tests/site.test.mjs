@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 
 const pages = {
-  'index.html': 'Гостиничный консалтинг',
-  'services.html': 'Услуги гостиничного консалтинга',
-  'service.html': 'Концепция и позиционирование',
-  'about.html': 'О компании',
-  'projects.html': 'Проекты',
-  'project.html': 'Проект гостиничного объекта',
-  'blog.html': 'Блог',
-  'article.html': 'Как провести аудит гостиничного проекта',
+  'index.html': 'Продажи отеля работают как система',
+  'services.html': 'Услуги по развитию продаж отеля',
+  'service.html': 'Аудит системы продаж отеля',
+  'about.html': 'О проекте',
+  'projects.html': 'Кейсы',
+  'project.html': 'Как устроен кейс',
+  'blog.html': 'Полезное',
+  'article.html': 'Как провести аудит продаж отеля',
   'contacts.html': 'Контакты',
   'privacy.html': 'Политика конфиденциальности',
   'consent.html': 'Согласие на обработку персональных данных',
@@ -112,13 +112,13 @@ test('homepage contains the complete conversion path', async () => {
   for (const id of ['services', 'situations', 'process', 'projects', 'about', 'insights', 'faq', 'contact']) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
-  assert.ok((html.match(/data-service-card/g) || []).length >= 6);
+  assert.equal((html.match(/data-service-offer/g) || []).length, 4);
   assert.ok((html.match(/data-process-step/g) || []).length >= 4);
   assert.ok((html.match(/data-project-card/g) || []).length >= 3);
   assert.ok((html.match(/data-article-card/g) || []).length >= 3);
-  assert.ok((html.match(/data-accordion-button/g) || []).length >= 5);
-  assert.match(html, /Пример кейса/);
-  assert.match(html, /Здесь будет отзыв клиента/);
+  assert.ok((html.match(/data-accordion-button/g) || []).length >= 4);
+  assert.match(html, /Пример структуры кейса/);
+  assert.match(html, /Моя миссия/i);
 });
 
 test('reveal motion progressively enhances visible content', async () => {
@@ -141,7 +141,7 @@ test('listing pages contain complete card sets', async () => {
   const services = await readFile(new URL('../services.html', import.meta.url), 'utf8');
   const projects = await readFile(new URL('../projects.html', import.meta.url), 'utf8');
   const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
-  assert.ok((services.match(/data-service-link/g) || []).length >= 6);
+  assert.equal((services.match(/data-service-offer/g) || []).length, 4);
   assert.ok((projects.match(/data-project-link/g) || []).length >= 3);
   assert.ok((blog.match(/data-article-link/g) || []).length >= 3);
 });
@@ -249,4 +249,105 @@ test('opening a modal from the mobile menu closes and synchronizes the menu', as
 test('shared navigation marks the current page at runtime', async () => {
   const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   assert.match(main, /function setupCurrentNavigation\(\)/);
+});
+
+test('shared navigation uses the client information architecture', async () => {
+  for (const file of Object.keys(pages)) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    for (const label of ['О проекте', 'Услуги', 'Кейсы', 'Полезное', 'Контакты']) {
+      assert.match(html, new RegExp(`>${label}<`), `${file}: ${label}`);
+    }
+  }
+});
+
+test('public contact details are consistent', async () => {
+  for (const file of marketingPages) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /tel:\+79065039428/);
+    assert.match(html, /vitalinapogorila@yandex\.ru/i);
+  }
+});
+
+test('services present the four confirmed offers', async () => {
+  const html = await readFile(new URL('../services.html', import.meta.url), 'utf8');
+  const offers = [
+    'Аудит системы продаж',
+    'Индивидуальная консультация',
+    'Ведение внешних каналов продаж',
+    'Ведение прямых каналов продаж'
+  ];
+  for (const offer of offers) assert.match(html, new RegExp(offer));
+  assert.equal((html.match(/data-service-offer/g) || []).length, 4);
+});
+
+test('project page contains the confirmed mission and biography anchors', async () => {
+  const html = await readFile(new URL('../about.html', import.meta.url), 'utf8');
+  assert.match(html, /увеличивать доход и выручку отелей/i);
+  assert.match(html, /2013/);
+  assert.match(html, /коммерческ(?:ий|ого) директор/i);
+  assert.match(html, /HLB/);
+  assert.match(html, /Коммерсантъ/);
+});
+
+test('service pages expose both approved conversion actions', async () => {
+  for (const file of ['services.html', 'service.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /Оставить заявку/);
+    assert.match(html, /Записаться на бесплатную консультацию/);
+    assert.match(html, /data-modal-title/);
+    assert.match(html, /data-modal-description/);
+  }
+});
+
+test('mobile menu exposes three animated strokes and an open class contract', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  assert.equal((html.match(/menu-toggle__line/g) || []).length, 3);
+  assert.match(css, /menu-toggle\[aria-expanded="true"\]/);
+  assert.match(css, /\.mobile-menu\.is-open/);
+  assert.match(js, /Закрыть меню/);
+});
+
+test('FAQ and companion card have independent animated layout contracts', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const js = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  assert.match(css, /\.final-grid\s*\{[^}]*align-items:\s*start/s);
+  assert.match(css, /\.accordion__panel\.is-open/);
+  assert.doesNotMatch(js, /panel\.hidden\s*=\s*expanded/);
+});
+
+test('marketing pages end with relevant FAQ controls', async () => {
+  for (const file of marketingPages) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.ok((html.match(/data-accordion-button/g) || []).length >= 3, file);
+  }
+});
+
+test('lead dialog avoids an internal scrolling panel', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const panelRule = css.match(/\.modal__panel\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+  assert.doesNotMatch(panelRule, /overflow:\s*auto/);
+  assert.match(css, /\.modal\s*\{[^}]*overflow-y:\s*auto/s);
+});
+
+test('Cookie settings use the shared button system', async () => {
+  for (const file of Object.keys(pages)) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /<button class="button button--ghost"[^>]*data-cookie-settings/);
+    assert.match(html, /<div class="cookie-options"[^>]*data-cookie-options/);
+  }
+});
+
+test('text-only service card opts out of the image-card row template', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(html, /service-card--text/);
+  assert.match(css, /\.service-card--text\s*\{[^}]*grid-template-rows:\s*1fr/s);
+});
+
+test('contact layout uses bounded typography and safe wrapping', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.contact-details > a[\s\S]*?overflow-wrap:\s*anywhere/);
+  assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.7fr\)\s+minmax\(0,\s*1\.3fr\)/s);
 });

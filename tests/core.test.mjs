@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  getDisclosureState,
+  getMenuState,
   normalizeCookiePreferences,
   serializeCookiePreferences,
   validateLead
@@ -38,4 +40,32 @@ test('cookie preferences always keep necessary cookies', () => {
     serializeCookiePreferences({ analytics: false }),
     '{"necessary":true,"analytics":false}'
   );
+});
+
+test('menu state synchronizes classes and accessible labels', () => {
+  assert.deepEqual(getMenuState(true), {
+    expanded: 'true',
+    hidden: 'false',
+    label: 'Закрыть меню',
+    className: 'is-open'
+  });
+  assert.deepEqual(getMenuState(false), {
+    expanded: 'false',
+    hidden: 'true',
+    label: 'Открыть меню',
+    className: ''
+  });
+});
+
+test('disclosure state returns synchronized open and closed values', () => {
+  assert.deepEqual(getDisclosureState(true), {
+    expanded: 'true',
+    hidden: 'false',
+    className: 'is-open'
+  });
+  assert.deepEqual(getDisclosureState(false), {
+    expanded: 'false',
+    hidden: 'true',
+    className: ''
+  });
 });
