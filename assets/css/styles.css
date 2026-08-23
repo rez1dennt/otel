@@ -492,24 +492,22 @@ a:hover .image-frame img {
 
 .mobile-menu {
   position: fixed;
-  inset: var(--space-3);
+  inset: 0;
   z-index: 70;
   padding: var(--space-20) var(--space-6) var(--space-6);
-  border: var(--line-thin) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 0;
+  border-radius: 0;
   background: var(--color-surface);
-  box-shadow: var(--shadow-soft);
+  box-shadow: none;
   visibility: hidden;
-  opacity: 0;
-  translate: 0 calc(var(--space-3) * -1);
+  translate: 100% 0;
   pointer-events: none;
-  transition: opacity var(--duration-base) var(--ease-out), translate var(--duration-base) var(--ease-out), visibility 0s linear var(--duration-base);
+  transition: translate var(--duration-base) var(--ease-out), visibility var(--duration-zero) linear var(--duration-base);
 }
 
 .mobile-menu.is-open {
   visibility: visible;
-  opacity: 1;
-  translate: 0;
+  translate: 0 0;
   pointer-events: auto;
   transition-delay: var(--duration-zero);
 }

@@ -310,6 +310,18 @@ test('mobile menu exposes three animated strokes and an open class contract', as
   assert.match(`${js}\n${core}`, /Закрыть меню/);
 });
 
+test('mobile menu covers the viewport and enters from right to left', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const closedRule = css.match(/\.mobile-menu\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+  const openRule = css.match(/\.mobile-menu\.is-open\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+  assert.match(closedRule, /inset:\s*0;/);
+  assert.match(closedRule, /border:\s*0;/);
+  assert.match(closedRule, /border-radius:\s*0;/);
+  assert.match(closedRule, /translate:\s*100% 0;/);
+  assert.match(closedRule, /background:\s*var\(--color-surface\);/);
+  assert.match(openRule, /translate:\s*0 0;/);
+});
+
 test('FAQ and companion card have independent animated layout contracts', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   const js = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
