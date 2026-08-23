@@ -2436,6 +2436,11 @@ a:hover .image-frame img {
     gap: var(--space-5);
   }
 
+  .section-heading h2,
+  .service-card h3 {
+    max-width: none;
+  }
+
   .grid--2,
   .grid--3,
   .grid--4 {
@@ -2469,7 +2474,7 @@ a:hover .image-frame img {
   }
 
   .hero h1 {
-    max-width: 11ch;
+    max-width: none;
     font-size: clamp(2.5rem, 11vw, 3.25rem);
   }
 
@@ -2631,6 +2636,7 @@ a:hover .image-frame img {
   .detail-hero h1,
   .case-hero h1,
   .article-header h1 {
+    max-width: none;
     font-size: clamp(2.25rem, 11vw, 3.5rem);
     overflow-wrap: anywhere;
   }

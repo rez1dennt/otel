@@ -376,14 +376,15 @@ test('contact layout uses bounded typography and safe wrapping', async () => {
   assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.7fr\)\s+minmax\(0,\s*1\.3fr\)/s);
 });
 
-test('mobile hero type stays compact enough for narrow screens', async () => {
+test('mobile hero type uses the available content width', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /\.hero h1\s*\{[^}]*max-width:\s*11ch;[^}]*font-size:\s*clamp\(2\.5rem,\s*11vw,\s*3\.25rem\)/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.hero h1\s*\{[^}]*max-width:\s*none;[^}]*font-size:\s*clamp\(2\.5rem,\s*11vw,\s*3\.25rem\)/s);
 });
 
-test('mobile sections keep a comfortable twenty pixel gutter', async () => {
+test('mobile headings keep twenty pixel gutters and expand beyond narrow desktop measures', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.container,\s*\.site-header\s*\{[^}]*width:\s*min\(100% - var\(--space-10\),\s*var\(--container\)\)/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.section-heading h2,\s*\.service-card h3\s*\{[^}]*max-width:\s*none;/s);
   assert.match(css, /\.page-hero--split\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
   assert.match(css, /\.process-section\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
 });
