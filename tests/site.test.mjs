@@ -212,7 +212,7 @@ test('all local links and images resolve to project files', async () => {
       ...[...html.matchAll(/src="([^"]+)"/g)].map((match) => match[1])
     ];
     for (const reference of references) {
-      if (/^(?:https?:|mailto:|#)/.test(reference)) continue;
+      if (/^(?:https?:|mailto:|tel:|#)/.test(reference)) continue;
       const localPath = reference.split('#')[0];
       if (!localPath) continue;
       await access(new URL(`../${localPath}`, import.meta.url));
@@ -303,10 +303,11 @@ test('mobile menu exposes three animated strokes and an open class contract', as
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   const js = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  const core = await readFile(new URL('../assets/js/core.js', import.meta.url), 'utf8');
   assert.equal((html.match(/menu-toggle__line/g) || []).length, 3);
   assert.match(css, /menu-toggle\[aria-expanded="true"\]/);
   assert.match(css, /\.mobile-menu\.is-open/);
-  assert.match(js, /Закрыть меню/);
+  assert.match(`${js}\n${core}`, /Закрыть меню/);
 });
 
 test('FAQ and companion card have independent animated layout contracts', async () => {

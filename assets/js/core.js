@@ -24,3 +24,20 @@ export function normalizeCookiePreferences(value = {}) {
 export function serializeCookiePreferences(value = {}) {
   return JSON.stringify(normalizeCookiePreferences(value));
 }
+
+export function getMenuState(open) {
+  return {
+    expanded: String(Boolean(open)),
+    hidden: String(!open),
+    label: open ? 'Закрыть меню' : 'Открыть меню',
+    className: open ? 'is-open' : ''
+  };
+}
+
+export function getDisclosureState(open) {
+  return {
+    expanded: String(Boolean(open)),
+    hidden: String(!open),
+    className: open ? 'is-open' : ''
+  };
+}

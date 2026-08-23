@@ -1,4 +1,6 @@
 import {
+  getDisclosureState,
+  getMenuState,
   normalizeCookiePreferences,
   serializeCookiePreferences,
   validateLead
@@ -22,7 +24,7 @@ let lastFocused = null;
 function setOverlayState(overlay, open, returnTarget = null) {
   if (!overlay) return;
 
-  overlay.hidden = !open;
+  overlay.classList.toggle('is-open', open);
   overlay.setAttribute('aria-hidden', String(!open));
   document.body.classList.toggle('is-locked', open);
   activeOverlay = open ? overlay : null;
@@ -42,10 +44,12 @@ function closeMenu({ restoreFocus = true } = {}) {
   const menu = document.querySelector('[data-mobile-menu]');
   if (!toggle || !menu) return;
 
-  const wasOpen = !menu.hidden;
-  toggle.setAttribute('aria-expanded', 'false');
-  menu.hidden = true;
-  menu.setAttribute('aria-hidden', 'true');
+  const wasOpen = toggle.getAttribute('aria-expanded') === 'true';
+  const state = getMenuState(false);
+  toggle.setAttribute('aria-expanded', state.expanded);
+  toggle.setAttribute('aria-label', state.label);
+  menu.classList.toggle('is-open', Boolean(state.className));
+  menu.setAttribute('aria-hidden', state.hidden);
   document.body.classList.remove('is-locked');
   if (activeOverlay === menu) activeOverlay = null;
   if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus());
@@ -74,6 +78,13 @@ function setupModal() {
   const modal = document.querySelector('[data-modal]');
   if (!modal) return;
 
+  modal.hidden = false;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+
+  const title = modal.querySelector('[data-modal-title-target]');
+  const description = modal.querySelector('[data-modal-description-target]');
+
   document.querySelectorAll('[data-modal-open]').forEach((button) => {
     button.addEventListener('click', () => {
       const openedFromMenu = Boolean(button.closest('[data-mobile-menu]'));
@@ -81,6 +92,10 @@ function setupModal() {
         ? document.querySelector('[data-menu-toggle]')
         : button;
       if (openedFromMenu) closeMenu({ restoreFocus: false });
+      const nextTitle = button.dataset.modalTitle;
+      const nextDescription = button.dataset.modalDescription;
+      if (title && nextTitle) title.textContent = nextTitle;
+      if (description && nextDescription) description.textContent = nextDescription;
       setOverlayState(modal, true, returnTarget);
     });
   });
@@ -95,18 +110,27 @@ function setupMenu() {
   const menu = document.querySelector('[data-mobile-menu]');
   if (!toggle || !menu) return;
 
+  menu.hidden = false;
+  const initialState = getMenuState(false);
+  toggle.setAttribute('aria-expanded', initialState.expanded);
+  toggle.setAttribute('aria-label', initialState.label);
+  menu.setAttribute('aria-hidden', initialState.hidden);
+  menu.classList.remove('is-open');
+
   toggle.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
     if (!open) {
       closeMenu();
       return;
     }
-    toggle.setAttribute('aria-expanded', String(open));
-    menu.hidden = !open;
-    menu.setAttribute('aria-hidden', String(!open));
-    document.body.classList.toggle('is-locked', open);
-    activeOverlay = open ? menu : null;
-    if (open) menu.querySelector(FOCUSABLE)?.focus();
+    const state = getMenuState(open);
+    toggle.setAttribute('aria-expanded', state.expanded);
+    toggle.setAttribute('aria-label', state.label);
+    menu.classList.toggle('is-open', Boolean(state.className));
+    menu.setAttribute('aria-hidden', state.hidden);
+    document.body.classList.add('is-locked');
+    activeOverlay = menu;
+    requestAnimationFrame(() => menu.querySelector(FOCUSABLE)?.focus());
   });
 }
 
@@ -167,13 +191,36 @@ function setupForms() {
 
 function setupAccordion() {
   document.querySelectorAll('[data-accordion-button]').forEach((button) => {
+    const panelId = button.getAttribute('aria-controls');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) return;
+
+    panel.hidden = false;
+    panel.classList.add('accordion__panel');
+    const initial = getDisclosureState(false);
+    button.setAttribute('aria-expanded', initial.expanded);
+    panel.setAttribute('aria-hidden', initial.hidden);
+    panel.classList.remove('is-open');
+
     button.addEventListener('click', () => {
-      const panelId = button.getAttribute('aria-controls');
-      const panel = panelId ? document.getElementById(panelId) : null;
-      if (!panel) return;
       const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      panel.hidden = expanded;
+      const accordion = button.closest('.accordion');
+
+      accordion?.querySelectorAll('[data-accordion-button]').forEach((otherButton) => {
+        if (otherButton === button) return;
+        const otherId = otherButton.getAttribute('aria-controls');
+        const otherPanel = otherId ? document.getElementById(otherId) : null;
+        if (!otherPanel) return;
+        const closedState = getDisclosureState(false);
+        otherButton.setAttribute('aria-expanded', closedState.expanded);
+        otherPanel.setAttribute('aria-hidden', closedState.hidden);
+        otherPanel.classList.remove('is-open');
+      });
+
+      const state = getDisclosureState(!expanded);
+      button.setAttribute('aria-expanded', state.expanded);
+      panel.setAttribute('aria-hidden', state.hidden);
+      panel.classList.toggle('is-open', Boolean(state.className));
     });
   });
 }
@@ -193,6 +240,20 @@ function setupCookies() {
 
   const options = banner.querySelector('[data-cookie-options]');
   const analytics = banner.querySelector('[data-cookie-analytics]');
+  const settings = banner.querySelector('[data-cookie-settings]');
+  const setOptionsState = (open) => {
+    if (!options) return;
+    const state = getDisclosureState(open);
+    options.classList.toggle('is-open', Boolean(state.className));
+    options.setAttribute('aria-hidden', state.hidden);
+    settings?.setAttribute('aria-expanded', state.expanded);
+  };
+
+  if (options) {
+    options.hidden = false;
+    options.classList.add('cookie-options');
+    setOptionsState(false);
+  }
   const save = (preferences) => {
     localStorage.setItem(COOKIE_KEY, serializeCookiePreferences(preferences));
     banner.hidden = true;
@@ -204,8 +265,8 @@ function setupCookies() {
 
   banner.querySelector('[data-cookie-accept]')?.addEventListener('click', () => save({ analytics: true }));
   banner.querySelector('[data-cookie-reject]')?.addEventListener('click', () => save({ analytics: false }));
-  banner.querySelector('[data-cookie-settings]')?.addEventListener('click', () => {
-    if (options) options.hidden = !options.hidden;
+  settings?.addEventListener('click', () => {
+    setOptionsState(settings.getAttribute('aria-expanded') !== 'true');
   });
   banner.querySelector('[data-cookie-save]')?.addEventListener('click', () => {
     save({ analytics: Boolean(analytics?.checked) });
@@ -214,7 +275,7 @@ function setupCookies() {
   document.querySelectorAll('[data-cookie-reopen]').forEach((button) => {
     button.addEventListener('click', () => {
       banner.hidden = false;
-      if (options) options.hidden = false;
+      setOptionsState(true);
     });
   });
 }
