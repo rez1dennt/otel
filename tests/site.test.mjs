@@ -345,10 +345,23 @@ test('text-only service card opts out of the image-card row template', async () 
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(html, /service-card--text/);
   assert.match(css, /\.service-card--text\s*\{[^}]*grid-template-rows:\s*1fr/s);
+  assert.match(css, /\.service-card--text\s*\{[^}]*grid-column:\s*span 2/s);
 });
 
 test('contact layout uses bounded typography and safe wrapping', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.contact-details > a[\s\S]*?overflow-wrap:\s*anywhere/);
   assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.7fr\)\s+minmax\(0,\s*1\.3fr\)/s);
+});
+
+test('mobile hero type stays compact enough for narrow screens', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.hero h1\s*\{[^}]*max-width:\s*11ch;[^}]*font-size:\s*clamp\(2\.5rem,\s*11vw,\s*3\.25rem\)/s);
+});
+
+test('mobile modal removes empty error rows and uses compact density', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.modal__panel h2\s*\{[^}]*font-size:\s*var\(--text-2xl\)/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\)/s);
 });
