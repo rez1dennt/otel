@@ -19,7 +19,7 @@ const FOCUSABLE = [
 let activeOverlay = null;
 let lastFocused = null;
 
-function setOverlayState(overlay, open) {
+function setOverlayState(overlay, open, returnTarget = null) {
   if (!overlay) return;
 
   overlay.hidden = !open;
@@ -28,13 +28,27 @@ function setOverlayState(overlay, open) {
   activeOverlay = open ? overlay : null;
 
   if (open) {
-    lastFocused = document.activeElement;
+    lastFocused = returnTarget ?? document.activeElement;
     const focusTarget = overlay.querySelector(FOCUSABLE);
     requestAnimationFrame(() => focusTarget?.focus());
   } else if (lastFocused instanceof HTMLElement) {
     lastFocused.focus();
     lastFocused = null;
   }
+}
+
+function closeMenu({ restoreFocus = true } = {}) {
+  const toggle = document.querySelector('[data-menu-toggle]');
+  const menu = document.querySelector('[data-mobile-menu]');
+  if (!toggle || !menu) return;
+
+  const wasOpen = !menu.hidden;
+  toggle.setAttribute('aria-expanded', 'false');
+  menu.hidden = true;
+  menu.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('is-locked');
+  if (activeOverlay === menu) activeOverlay = null;
+  if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus());
 }
 
 function trapFocus(event) {
@@ -61,7 +75,14 @@ function setupModal() {
   if (!modal) return;
 
   document.querySelectorAll('[data-modal-open]').forEach((button) => {
-    button.addEventListener('click', () => setOverlayState(modal, true));
+    button.addEventListener('click', () => {
+      const openedFromMenu = Boolean(button.closest('[data-mobile-menu]'));
+      const returnTarget = openedFromMenu
+        ? document.querySelector('[data-menu-toggle]')
+        : button;
+      if (openedFromMenu) closeMenu({ restoreFocus: false });
+      setOverlayState(modal, true, returnTarget);
+    });
   });
 
   modal.querySelectorAll('[data-modal-close]').forEach((button) => {
@@ -76,12 +97,25 @@ function setupMenu() {
 
   toggle.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') !== 'true';
+    if (!open) {
+      closeMenu();
+      return;
+    }
     toggle.setAttribute('aria-expanded', String(open));
     menu.hidden = !open;
     menu.setAttribute('aria-hidden', String(!open));
     document.body.classList.toggle('is-locked', open);
     activeOverlay = open ? menu : null;
     if (open) menu.querySelector(FOCUSABLE)?.focus();
+  });
+}
+
+function setupCurrentNavigation() {
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.site-nav a, [data-mobile-menu] a').forEach((link) => {
+    const destination = link.getAttribute('href')?.split('#')[0];
+    link.toggleAttribute('aria-current', destination === currentPage);
+    if (destination === currentPage) link.setAttribute('aria-current', 'page');
   });
 }
 
@@ -207,18 +241,13 @@ function setupReveal() {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && activeOverlay) {
     if (activeOverlay.matches('[data-modal]')) setOverlayState(activeOverlay, false);
-    else {
-      activeOverlay.hidden = true;
-      activeOverlay.setAttribute('aria-hidden', 'true');
-      document.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
-      document.body.classList.remove('is-locked');
-      activeOverlay = null;
-    }
+    else closeMenu();
   }
   trapFocus(event);
 });
 
 setupModal();
+setupCurrentNavigation();
 setupMenu();
 setupForms();
 setupAccordion();

@@ -38,12 +38,18 @@ for (const [file, heading] of Object.entries(pages)) {
     assert.equal((html.match(/<h1[\s>]/g) || []).length, 1);
     assert.match(html, new RegExp(heading));
     assert.match(html, /<meta name="description" content="[^"]{40,}">/);
+    assert.match(html, /<meta property="og:type" content="(?:website|article)">/);
+    assert.match(html, /<meta property="og:url" content="https:\/\/example\.ru\/[^"]*">/);
+    assert.match(html, /<meta property="og:image" content="https:\/\/example\.ru\/assets\/images\/hero-hotel\.webp">/);
     assert.match(html, /<link rel="canonical" href="https:\/\/example\.ru\/[^"]*">/);
     assert.match(html, /assets\/css\/styles\.css/);
     assert.match(html, /assets\/js\/main\.js/);
+    assert.match(html, /rel="manifest" href="site\.webmanifest"/);
     assert.match(html, /privacy\.html/);
     assert.match(html, /consent\.html/);
     assert.match(html, /cookies\.html/);
+    assert.match(html, /class="skip-link" href="#main-content"/);
+    assert.match(html, /<main[^>]*id="main-content"/);
   });
 }
 
@@ -62,6 +68,9 @@ for (const file of Object.keys(pages)) {
     assert.match(html, /data-cookie-accept/);
     assert.match(html, /data-cookie-reject/);
     assert.match(html, /data-cookie-settings/);
+    assert.match(html, /data-cookie-reopen/);
+    assert.match(html, /data-cookie-accept>Принять все</);
+    assert.match(html, /Аналитические Cookie/);
   });
 }
 
@@ -76,6 +85,14 @@ for (const file of marketingPages) {
     assert.match(html, /<label for="lead-email/);
     assert.match(html, /<label for="lead-phone/);
     assert.match(html, /href="consent\.html"/);
+    assert.match(html, /href="privacy\.html"/);
+    assert.match(html, /name="message"/);
+    assert.match(html, /name="phone" type="tel" autocomplete="tel"/);
+    assert.match(html, /name="email" type="email" autocomplete="email"/);
+    assert.match(html, /Форма демонстрационная/);
+    assert.match(html, /data-menu-toggle/);
+    assert.match(html, /data-mobile-menu/);
+    assert.match(html, /site-footer--full/);
   });
 }
 
@@ -116,6 +133,7 @@ test('detail pages contain breadcrumbs', async () => {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
     assert.match(html, /data-breadcrumb/);
     assert.match(html, /aria-label="Хлебные крошки"/);
+    assert.match(html, /"@type":"BreadcrumbList"/);
   }
 });
 
@@ -134,6 +152,11 @@ test('contacts page contains a labeled lead form', async () => {
   assert.match(html, /<label for="contact-name/);
   assert.match(html, /<label for="contact-email/);
   assert.match(html, /<label for="contact-phone/);
+});
+
+test('article page links to two related materials', async () => {
+  const html = await readFile(new URL('../article.html', import.meta.url), 'utf8');
+  assert.ok((html.match(/data-related-material/g) || []).length >= 2);
 });
 
 test('mobile detail grid can shrink below content intrinsic width', async () => {
@@ -209,5 +232,21 @@ test('structured data blocks contain valid JSON', async () => {
 test('navigation links keep accessible targets and remain available without a menu toggle', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-nav a\s*\{[^}]*min-height:/s);
-  assert.match(css, /\.site-header:not\(:has\(\.menu-toggle\)\) \.site-nav/);
+  assert.match(css, /@media \(max-width: 64rem\)[\s\S]*?\.site-nav\s*\{[^}]*display:\s*flex/);
+});
+
+test('mobile navigation is hidden only after JavaScript enhancement', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.js \.site-header:has\(\.menu-toggle\) \.site-nav\s*\{\s*display:\s*none/);
+});
+
+test('opening a modal from the mobile menu closes and synchronizes the menu', async () => {
+  const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  assert.match(main, /closeMenu\(\{ restoreFocus: false \}\)/);
+  assert.match(main, /returnTarget/);
+});
+
+test('shared navigation marks the current page at runtime', async () => {
+  const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  assert.match(main, /function setupCurrentNavigation\(\)/);
 });

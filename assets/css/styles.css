@@ -495,6 +495,17 @@ a:hover .image-frame img {
   font-size: var(--text-sm);
 }
 
+.footer-settings {
+  min-height: var(--space-8);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
 .hero {
   position: relative;
   min-height: min(53rem, calc(100vh - var(--header-height) - var(--space-4)));
@@ -1648,6 +1659,47 @@ a:hover .image-frame img {
   font-size: var(--text-xl);
 }
 
+.related-materials {
+  padding-block: 0 var(--space-24);
+}
+
+.related-materials h2 {
+  margin-block-end: var(--space-8);
+  font-size: var(--text-3xl);
+}
+
+.related-materials > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.related-materials a {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 10rem;
+  align-content: end;
+  padding: var(--space-6);
+  border: var(--line-thin) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-decoration: none;
+}
+
+.related-materials span {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.related-materials strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
@@ -1948,16 +2000,12 @@ a:hover .image-frame img {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .site-nav {
-    display: none;
-  }
-
-  .site-header:not(:has(.menu-toggle)) {
+  .site-header {
     flex-wrap: wrap;
     padding-block: var(--space-3);
   }
 
-  .site-header:not(:has(.menu-toggle)) .site-nav {
+  .site-nav {
     display: flex;
     width: 100%;
     order: 3;
@@ -1965,7 +2013,16 @@ a:hover .image-frame img {
     padding-block-end: var(--space-2);
   }
 
-  .menu-toggle {
+  .js .site-header:has(.menu-toggle) {
+    flex-wrap: nowrap;
+    padding-block: 0;
+  }
+
+  .js .site-header:has(.menu-toggle) .site-nav {
+    display: none;
+  }
+
+  .js .menu-toggle {
     display: grid;
   }
 
@@ -2237,6 +2294,10 @@ a:hover .image-frame img {
   .detail-aside,
   .article-layout > aside {
     position: static;
+  }
+
+  .related-materials > div {
+    grid-template-columns: 1fr;
   }
 
   .result-list {
