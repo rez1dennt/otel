@@ -121,6 +121,16 @@ test('homepage contains the complete conversion path', async () => {
   assert.match(html, /Моя миссия/i);
 });
 
+test('homepage benefit icons use one aligned icon system', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  for (const icon of ['chart', 'system', 'check']) {
+    assert.match(html, new RegExp(`data-benefit-icon="${icon}"`));
+  }
+  assert.equal((html.match(/data-benefit-icon=/g) || []).length, 3);
+  assert.match(css, /\.benefit-card__icon svg,[\s\S]*?stroke-width:\s*1\.75;/);
+});
+
 test('reveal motion progressively enhances visible content', async () => {
   const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
