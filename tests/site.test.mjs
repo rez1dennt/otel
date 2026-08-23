@@ -18,6 +18,18 @@ const pages = {
   '404.html': 'Страница не найдена'
 };
 
+const marketingPages = [
+  'index.html',
+  'services.html',
+  'service.html',
+  'about.html',
+  'projects.html',
+  'project.html',
+  'blog.html',
+  'article.html',
+  'contacts.html'
+];
+
 for (const [file, heading] of Object.entries(pages)) {
   test(`${file} contains the shared semantic contract`, async () => {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
@@ -41,4 +53,39 @@ test('design tokens preserve the reference palette', async () => {
     assert.match(css.toUpperCase(), new RegExp(color));
   }
   assert.doesNotMatch(css.toUpperCase(), /#000000|#FFFFFF/);
+});
+
+for (const file of Object.keys(pages)) {
+  test(`${file} contains cookie controls`, async () => {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /data-cookie-banner/);
+    assert.match(html, /data-cookie-accept/);
+    assert.match(html, /data-cookie-reject/);
+    assert.match(html, /data-cookie-settings/);
+  });
+}
+
+for (const file of marketingPages) {
+  test(`${file} contains the shared lead dialog`, async () => {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /data-modal-open/);
+    assert.match(html, /data-modal[^-]/);
+    assert.match(html, /role="dialog"/);
+    assert.match(html, /data-lead-form/);
+    assert.match(html, /<label for="lead-name/);
+    assert.match(html, /<label for="lead-email/);
+    assert.match(html, /<label for="lead-phone/);
+    assert.match(html, /href="consent\.html"/);
+  });
+}
+
+test('homepage contains accessible FAQ controls', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /data-accordion-button/);
+  assert.match(html, /aria-controls="faq-/);
+});
+
+test('browser module graph uses JavaScript MIME-compatible extensions', async () => {
+  const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  assert.match(main, /from '\.\/core\.js'/);
 });

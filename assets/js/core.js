@@ -6,21 +6,10 @@ export function validateLead(values = {}) {
   const email = String(values.email ?? '').trim();
   const phoneDigits = String(values.phone ?? '').replace(/\D/gu, '');
 
-  if (!name) {
-    errors.name = 'Укажите имя';
-  }
-
-  if (!EMAIL_PATTERN.test(email)) {
-    errors.email = 'Проверьте электронную почту';
-  }
-
-  if (phoneDigits.length < 7) {
-    errors.phone = 'Проверьте номер телефона';
-  }
-
-  if (values.consent !== true) {
-    errors.consent = 'Нужно согласие на обработку данных';
-  }
+  if (!name) errors.name = 'Укажите имя';
+  if (!EMAIL_PATTERN.test(email)) errors.email = 'Проверьте электронную почту';
+  if (phoneDigits.length < 7) errors.phone = 'Проверьте номер телефона';
+  if (values.consent !== true) errors.consent = 'Нужно согласие на обработку данных';
 
   return errors;
 }

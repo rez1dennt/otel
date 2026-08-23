@@ -4,7 +4,7 @@ import {
   normalizeCookiePreferences,
   serializeCookiePreferences,
   validateLead
-} from '../assets/js/core.mjs';
+} from '../assets/js/core.js';
 
 test('valid lead has no errors', () => {
   assert.deepEqual(validateLead({
