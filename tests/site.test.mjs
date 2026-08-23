@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 
 const pages = {
   'index.html': 'Гостиничный консалтинг',
@@ -169,4 +169,45 @@ test('key content types include structured data', async () => {
     assert.match(html, /application\/ld\+json/);
     assert.match(html, /"@context"\s*:\s*"https:\/\/schema\.org"/);
   }
+});
+
+test('base layout can reflow below 320 pixels without a forced minimum', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /body\s*\{[^}]*min-width:\s*0;/s);
+});
+
+test('footer action buttons meet the 24 pixel target minimum', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.footer-contact button,[\s\S]*?\.footer-bottom button\s*\{[^}]*min-height:/);
+});
+
+test('all local links and images resolve to project files', async () => {
+  for (const file of Object.keys(pages)) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    const references = [
+      ...[...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]),
+      ...[...html.matchAll(/src="([^"]+)"/g)].map((match) => match[1])
+    ];
+    for (const reference of references) {
+      if (/^(?:https?:|mailto:|#)/.test(reference)) continue;
+      const localPath = reference.split('#')[0];
+      if (!localPath) continue;
+      await access(new URL(`../${localPath}`, import.meta.url));
+    }
+  }
+});
+
+test('structured data blocks contain valid JSON', async () => {
+  for (const file of ['index.html', 'service.html', 'project.html', 'article.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+    assert.ok(blocks.length > 0);
+    for (const block of blocks) assert.doesNotThrow(() => JSON.parse(block[1]));
+  }
+});
+
+test('navigation links keep accessible targets and remain available without a menu toggle', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.site-nav a\s*\{[^}]*min-height:/s);
+  assert.match(css, /\.site-header:not\(:has\(\.menu-toggle\)\) \.site-nav/);
 });

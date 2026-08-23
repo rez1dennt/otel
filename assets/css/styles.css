@@ -56,6 +56,7 @@
   --duration-fast: 160ms;
   --duration-base: 280ms;
   --duration-slow: 640ms;
+  --duration-none: 0.01ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
   --shadow-soft: 0 1.5rem 4.375rem rgb(45 40 29 / 0.09);
@@ -116,7 +117,7 @@ html {
 
 body {
   margin: 0;
-  min-width: 20rem;
+  min-width: 0;
   background: var(--color-page);
   color: var(--color-text);
   font-family: var(--font-ui);
@@ -475,6 +476,9 @@ a:hover .image-frame img {
 }
 
 .site-nav a {
+  display: inline-flex;
+  min-height: var(--space-8);
+  align-items: center;
   text-decoration: none;
 }
 
@@ -1147,6 +1151,7 @@ a:hover .image-frame img {
 
 .footer-contact button,
 .footer-bottom button {
+  min-height: var(--space-8);
   padding: 0;
   border: 0;
   background: transparent;
@@ -1947,6 +1952,19 @@ a:hover .image-frame img {
     display: none;
   }
 
+  .site-header:not(:has(.menu-toggle)) {
+    flex-wrap: wrap;
+    padding-block: var(--space-3);
+  }
+
+  .site-header:not(:has(.menu-toggle)) .site-nav {
+    display: flex;
+    width: 100%;
+    order: 3;
+    overflow-x: auto;
+    padding-block-end: var(--space-2);
+  }
+
   .menu-toggle {
     display: grid;
   }
@@ -2295,8 +2313,8 @@ a:hover .image-frame img {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-none) !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: var(--duration-none) !important;
   }
 }
