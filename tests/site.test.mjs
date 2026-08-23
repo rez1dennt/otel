@@ -381,6 +381,13 @@ test('mobile hero type stays compact enough for narrow screens', async () => {
   assert.match(css, /\.hero h1\s*\{[^}]*max-width:\s*11ch;[^}]*font-size:\s*clamp\(2\.5rem,\s*11vw,\s*3\.25rem\)/s);
 });
 
+test('mobile sections keep a comfortable twenty pixel gutter', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.container,\s*\.site-header\s*\{[^}]*width:\s*min\(100% - var\(--space-10\),\s*var\(--container\)\)/s);
+  assert.match(css, /\.page-hero--split\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
+  assert.match(css, /\.process-section\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
+});
+
 test('mobile modal removes empty error rows and uses compact density', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);

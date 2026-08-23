@@ -2424,7 +2424,7 @@ a:hover .image-frame img {
 
   .container,
   .site-header {
-    width: min(100% - var(--space-6), var(--container));
+    width: min(100% - var(--space-10), var(--container));
   }
 
   .section {
@@ -2533,7 +2533,7 @@ a:hover .image-frame img {
   }
 
   .process-section {
-    margin-inline: var(--space-3);
+    margin-inline: var(--space-5);
     border-radius: var(--radius-lg);
   }
 
@@ -2616,7 +2616,7 @@ a:hover .image-frame img {
 
   .page-hero--split {
     min-height: 0;
-    margin-inline: var(--space-3);
+    margin-inline: var(--space-5);
     border-radius: var(--radius-lg);
   }
 
