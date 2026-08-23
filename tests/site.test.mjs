@@ -34,3 +34,11 @@ for (const [file, heading] of Object.entries(pages)) {
     assert.match(html, /cookies\.html/);
   });
 }
+
+test('design tokens preserve the reference palette', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  for (const color of ['#F2F1EF', '#FAF9F7', '#2D281D', '#66635B', '#3E4136', '#8B745F', '#D0C5B8', '#BABCC1', '#C9B3A4']) {
+    assert.match(css.toUpperCase(), new RegExp(color));
+  }
+  assert.doesNotMatch(css.toUpperCase(), /#000000|#FFFFFF/);
+});
