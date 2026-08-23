@@ -110,3 +110,34 @@ test('reveal motion progressively enhances visible content', async () => {
   assert.match(main, /document\.documentElement\.classList\.add\('js'\)/);
   assert.match(css, /\.js \[data-reveal\]/);
 });
+
+test('detail pages contain breadcrumbs', async () => {
+  for (const file of ['service.html', 'project.html', 'article.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /data-breadcrumb/);
+    assert.match(html, /aria-label="Хлебные крошки"/);
+  }
+});
+
+test('listing pages contain complete card sets', async () => {
+  const services = await readFile(new URL('../services.html', import.meta.url), 'utf8');
+  const projects = await readFile(new URL('../projects.html', import.meta.url), 'utf8');
+  const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
+  assert.ok((services.match(/data-service-link/g) || []).length >= 6);
+  assert.ok((projects.match(/data-project-link/g) || []).length >= 3);
+  assert.ok((blog.match(/data-article-link/g) || []).length >= 3);
+});
+
+test('contacts page contains a labeled lead form', async () => {
+  const html = await readFile(new URL('../contacts.html', import.meta.url), 'utf8');
+  assert.match(html, /data-contact-form/);
+  assert.match(html, /<label for="contact-name/);
+  assert.match(html, /<label for="contact-email/);
+  assert.match(html, /<label for="contact-phone/);
+});
+
+test('mobile detail grid can shrink below content intrinsic width', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.detail-hero__grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
+  assert.match(css, /overflow-wrap:\s*anywhere/);
+});
