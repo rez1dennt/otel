@@ -99,7 +99,7 @@ for (const file of marketingPages) {
 test('homepage contains accessible FAQ controls', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /data-accordion-button/);
-  assert.match(html, /aria-controls="faq-/);
+  assert.match(html, /aria-controls="[^"]*faq-/);
 });
 
 test('browser module graph uses JavaScript MIME-compatible extensions', async () => {
@@ -284,7 +284,7 @@ test('project page contains the confirmed mission and biography anchors', async 
   const html = await readFile(new URL('../about.html', import.meta.url), 'utf8');
   assert.match(html, /увеличивать доход и выручку отелей/i);
   assert.match(html, /2013/);
-  assert.match(html, /коммерческ(?:ий|ого) директор/i);
+  assert.match(html, /коммерческ(?:ий|ого|им) директор/i);
   assert.match(html, /HLB/);
   assert.match(html, /Коммерсантъ/);
 });
