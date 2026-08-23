@@ -89,3 +89,24 @@ test('browser module graph uses JavaScript MIME-compatible extensions', async ()
   const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   assert.match(main, /from '\.\/core\.js'/);
 });
+
+test('homepage contains the complete conversion path', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  for (const id of ['services', 'situations', 'process', 'projects', 'about', 'insights', 'faq', 'contact']) {
+    assert.match(html, new RegExp(`id="${id}"`));
+  }
+  assert.ok((html.match(/data-service-card/g) || []).length >= 6);
+  assert.ok((html.match(/data-process-step/g) || []).length >= 4);
+  assert.ok((html.match(/data-project-card/g) || []).length >= 3);
+  assert.ok((html.match(/data-article-card/g) || []).length >= 3);
+  assert.ok((html.match(/data-accordion-button/g) || []).length >= 5);
+  assert.match(html, /Пример кейса/);
+  assert.match(html, /Здесь будет отзыв клиента/);
+});
+
+test('reveal motion progressively enhances visible content', async () => {
+  const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(main, /document\.documentElement\.classList\.add\('js'\)/);
+  assert.match(css, /\.js \[data-reveal\]/);
+});

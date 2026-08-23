@@ -4,6 +4,8 @@ import {
   validateLead
 } from './core.js';
 
+document.documentElement.classList.add('js');
+
 const COOKIE_KEY = 'hotel-consulting-cookie-preferences';
 const FOCUSABLE = [
   'a[href]',
