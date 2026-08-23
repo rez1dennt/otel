@@ -141,3 +141,32 @@ test('mobile detail grid can shrink below content intrinsic width', async () => 
   assert.match(css, /\.detail-hero__grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
 });
+
+test('legal pages use confirmed operator details', async () => {
+  for (const file of ['privacy.html', 'consent.html', 'cookies.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /ИП Погорила Виталина Петровна/);
+    assert.match(html, /502745335560/);
+    assert.match(html, /325774600286352/);
+  }
+});
+
+test('technical SEO files expose every public page', async () => {
+  const robots = await readFile(new URL('../robots.txt', import.meta.url), 'utf8');
+  const sitemap = await readFile(new URL('../sitemap.xml', import.meta.url), 'utf8');
+  const manifest = await readFile(new URL('../site.webmanifest', import.meta.url), 'utf8');
+  assert.match(robots, /Sitemap: https:\/\/example\.ru\/sitemap\.xml/);
+  for (const file of Object.keys(pages).filter((file) => file !== '404.html')) {
+    const path = file === 'index.html' ? '' : file;
+    assert.match(sitemap, new RegExp(`https://example\\.ru/${path}`));
+  }
+  assert.match(manifest, /"theme_color"\s*:\s*"#F2F1EF"/);
+});
+
+test('key content types include structured data', async () => {
+  for (const file of ['index.html', 'service.html', 'project.html', 'article.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /application\/ld\+json/);
+    assert.match(html, /"@context"\s*:\s*"https:\/\/schema\.org"/);
+  }
+});

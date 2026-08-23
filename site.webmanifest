@@ -1,0 +1,10 @@
+{
+  "name": "FORMA hotel advisory",
+  "short_name": "FORMA",
+  "lang": "ru",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2F1EF",
+  "theme_color": "#F2F1EF",
+  "description": "Гостиничный консалтинг для проектов на разных стадиях развития."
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://example.ru/</loc></url>
+  <url><loc>https://example.ru/services.html</loc></url>
+  <url><loc>https://example.ru/service.html</loc></url>
+  <url><loc>https://example.ru/about.html</loc></url>
+  <url><loc>https://example.ru/projects.html</loc></url>
+  <url><loc>https://example.ru/project.html</loc></url>
+  <url><loc>https://example.ru/blog.html</loc></url>
+  <url><loc>https://example.ru/article.html</loc></url>
+  <url><loc>https://example.ru/contacts.html</loc></url>
+  <url><loc>https://example.ru/privacy.html</loc></url>
+  <url><loc>https://example.ru/consent.html</loc></url>
+  <url><loc>https://example.ru/cookies.html</loc></url>
+</urlset>
