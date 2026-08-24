@@ -115,6 +115,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + var(--space-4));
   scrollbar-gutter: stable;
   color-scheme: light;
   background: var(--color-page);
@@ -367,15 +368,19 @@ a:hover .image-frame img {
 }
 
 .site-header {
-  position: relative;
-  z-index: 40;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 60;
   display: flex;
+  width: 100%;
   min-height: var(--header-height);
   align-items: center;
   justify-content: space-between;
   gap: var(--space-8);
-  width: min(var(--container), calc(100% - var(--space-10)));
-  margin-inline: auto;
+  margin-inline: 0;
+  padding-inline: max(var(--space-3), calc((100% - var(--container)) / 2));
+  border-block-end: var(--line-thin) solid var(--color-border);
+  background: var(--color-page);
 }
 
 .brand {
@@ -1302,7 +1307,15 @@ a:hover .image-frame img {
 .footer-bottom > div {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-4);
+}
+
+.footer-bottom > div > :is(a, button) {
+  display: inline-flex;
+  min-height: var(--space-8);
+  align-items: center;
+  line-height: 1;
 }
 
 .form-status {
@@ -1503,8 +1516,24 @@ body:has(.mission-panel) .page-hero__media img {
   transition: translate var(--duration-fast) var(--ease-out);
 }
 
-:is(.service-card, .project-card, .insight-card[href], .project-listing > a) {
+.insight-card .card-link-cue {
+  min-height: var(--space-8);
+  align-items: center;
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+:is(.service-card, .project-card, .insight-card[href]) {
   transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), translate var(--duration-fast) var(--ease-out);
+}
+
+.project-listing > a {
+  transition: translate var(--duration-fast) var(--ease-out);
 }
 
 :is(.service-card, .project-card, .insight-card[href], .project-listing > a):active {
@@ -1678,8 +1707,6 @@ body:has(.mission-panel) .page-hero__media img {
   grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
   gap: var(--space-8);
   align-items: center;
-  border: var(--line-thin) solid transparent;
-  border-radius: var(--radius-md);
   color: var(--color-text);
   text-decoration: none;
 }
@@ -1861,7 +1888,7 @@ body:has(.mission-panel) .page-hero__media img {
 .contact-grid {
   display: grid;
   width: min(calc(var(--container) - (var(--space-20) * 2)), calc(100% - var(--space-10)));
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
@@ -2658,10 +2685,14 @@ body:has(.contact-form) .contact-details::before {
 }
 
 @media (hover: hover) {
-  :is(.service-card, .project-card, .insight-card[href], .project-listing > a):hover {
+  :is(.service-card, .project-card, .insight-card[href]):hover {
     translate: 0 calc(var(--space-1) * -1);
     border-color: var(--color-accent);
     box-shadow: var(--shadow-float);
+  }
+
+  .project-listing > a:hover {
+    translate: 0 calc(var(--space-1) * -1);
   }
 
   :is(.service-card, .project-card, .insight-card[href], .project-listing > a):hover .card-link-cue::after,
@@ -2764,9 +2795,13 @@ body:has(.contact-form) .contact-details::before {
     --header-height: 4.5rem;
   }
 
-  .container,
-  .site-header {
+  .container {
     width: min(100% - var(--space-10), var(--container));
+  }
+
+  .site-header {
+    width: 100%;
+    padding-inline: var(--space-5);
   }
 
   .section {

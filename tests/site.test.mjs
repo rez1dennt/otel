@@ -445,7 +445,7 @@ test('navigable cards expose persistent destination cues without duplicating but
   assert.equal((blog.match(/class="card-link-cue"/g) || []).length, 2);
 
   const modalOnlyMaterial = blog.match(/<article class="insight-card"[\s\S]*?<\/article>/)?.[0] ?? '';
-  assert.doesNotMatch(modalOnlyMaterial, /card-link-cue/);
+  assert.doesNotMatch(modalOnlyMaterial, /<span class="card-link-cue"/);
 });
 
 test('card navigation cues expose desktop, keyboard and touch affordances', async () => {
@@ -456,8 +456,19 @@ test('card navigation cues expose desktop, keyboard and touch affordances', asyn
   assert.match(css, /\.service-card h3 a::after\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*content:\s*"";/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*2;/s);
   assert.match(css, /\.service-card:has\(h3 a:focus-visible\)\s*\{[^}]*box-shadow:\s*var\(--focus-ring\);/s);
-  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\]\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
   assert.match(css, /:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):active\s*\{[^}]*translate:\s*0 var\(--space-1\);/s);
+});
+
+test('wide case rows stay unboxed while material actions share one cue style', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
+
+  assert.match(blog, /<button class="text-link card-link-cue"[^>]*data-modal-open[^>]*>Запросить материал<\/button>/);
+  assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*min-height:\s*var\(--space-8\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
+  assert.match(css, /\.project-listing > a\s*\{[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
+  assert.doesNotMatch(css, /\.project-listing > a,\s*\.article-listing > a\s*\{[^}]*border:/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-listing > a:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);/s);
 });
 
 test('client photography is used in personal brand sections', async () => {
@@ -470,7 +481,18 @@ test('client photography is used in personal brand sections', async () => {
 test('contact layout uses bounded typography and safe wrapping', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.contact-details > a[\s\S]*?overflow-wrap:\s*anywhere/);
-  assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.7fr\)\s+minmax\(0,\s*1\.3fr\)/s);
+  assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.8fr\)\s+minmax\(0,\s*1\.2fr\)/s);
+});
+
+test('shared layout uses sticky header, aligned footer controls and wider contact details', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(css, /html\s*\{[^}]*scroll-padding-top:\s*calc\(var\(--header-height\) \+ var\(--space-4\)\);/s);
+  assert.match(css, /\.site-header\s*\{[^}]*position:\s*sticky;[^}]*inset-block-start:\s*0;[^}]*width:\s*100%;[^}]*border-block-end:\s*var\(--line-thin\) solid var\(--color-border\);[^}]*background:\s*var\(--color-page\);/s);
+  assert.match(css, /\.footer-bottom > div\s*\{[^}]*align-items:\s*center;/s);
+  assert.match(css, /\.footer-bottom > div > :is\(a, button\)\s*\{[^}]*display:\s*inline-flex;[^}]*min-height:\s*var\(--space-8\);[^}]*align-items:\s*center;[^}]*line-height:\s*1;/s);
+  assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 0\.8fr\) minmax\(0, 1\.2fr\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.site-header\s*\{[^}]*width:\s*100%;[^}]*padding-inline:\s*var\(--space-5\);/s);
 });
 
 test('contact section uses a compact bounded layout contract', async () => {
@@ -490,7 +512,7 @@ test('mobile hero type uses the available content width', async () => {
 
 test('mobile headings keep twenty pixel gutters and expand beyond narrow desktop measures', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.container,\s*\.site-header\s*\{[^}]*width:\s*min\(100% - var\(--space-10\),\s*var\(--container\)\)/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.container\s*\{[^}]*width:\s*min\(100% - var\(--space-10\),\s*var\(--container\)\)/s);
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.section-heading h2,\s*\.service-card h3\s*\{[^}]*max-width:\s*none;/s);
   assert.match(css, /\.page-hero--split\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
   assert.match(css, /\.process-section\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
