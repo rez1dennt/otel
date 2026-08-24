@@ -2922,8 +2922,9 @@ body:has(.contact-form) .contact-details::before {
     padding-inline: var(--space-5);
   }
 
-  .section {
-    padding-block: var(--space-20);
+  .section,
+  .section--compact {
+    padding-block: var(--space-12);
   }
 
   .section-heading {
@@ -2936,12 +2937,15 @@ body:has(.contact-form) .contact-details::before {
     max-width: none;
   }
 
-  .hero h1,
-  .section-heading h2,
-  .service-card h3 {
+  main :where(h1, h2, h3) {
     width: 100%;
-    text-align: center;
+    text-align: start;
     text-wrap: pretty;
+  }
+
+  .page-hero__center {
+    justify-items: start;
+    text-align: start;
   }
 
   .grid--2,
@@ -3124,10 +3128,7 @@ body:has(.contact-form) .contact-details::before {
   .faq-panel,
   .contact-panel {
     min-height: 0;
-  }
-
-  .contact-panel {
-    min-height: 34rem;
+    padding: var(--space-6);
   }
 
   .footer-bottom {
@@ -3150,6 +3151,10 @@ body:has(.contact-form) .contact-details::before {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .page-hero:not(.page-hero--split) {
+    padding-block: var(--space-10);
+  }
+
   .page-hero--split {
     min-height: 0;
     margin-inline: var(--space-5);
@@ -3169,9 +3174,20 @@ body:has(.contact-form) .contact-details::before {
   .article-header h1 {
     max-width: none;
     font-size: clamp(2.25rem, 11vw, 3.5rem);
-    text-align: center;
     text-wrap: pretty;
     overflow-wrap: anywhere;
+  }
+
+  .case-hero {
+    padding-block: var(--space-10) 0;
+  }
+
+  .article-header {
+    padding-block: var(--space-10) 0;
+  }
+
+  .detail-hero {
+    padding-block: var(--space-8) 0;
   }
 
   .listing-grid {
@@ -3197,6 +3213,10 @@ body:has(.contact-form) .contact-details::before {
 
   .related-materials > div {
     grid-template-columns: 1fr;
+  }
+
+  .related-materials {
+    padding-block-end: var(--space-16);
   }
 
   .result-list {
