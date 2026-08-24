@@ -920,6 +920,7 @@ a:hover .image-frame img {
 
 .project-card {
   display: grid;
+  grid-template-rows: auto 1fr;
   border: var(--line-thin) solid transparent;
   border-radius: var(--radius-md);
   color: var(--color-text);
@@ -935,12 +936,22 @@ a:hover .image-frame img {
 }
 
 .project-card__caption {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
   padding-block: var(--space-5);
 }
 
 .project-card__caption > span {
   display: block;
   margin-block-end: var(--space-2);
+}
+
+.project-card .card-link-cue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-block-end: 0;
 }
 
 .project-card h3 {
@@ -1077,7 +1088,7 @@ a:hover .image-frame img {
 }
 
 .insight-card p {
-  margin-block-end: 0;
+  margin-block-end: var(--space-3);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
@@ -1533,6 +1544,10 @@ body:has(.mission-panel) .page-hero__media img {
   letter-spacing: 0.1em;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.service-card__body > .card-link-cue {
+  margin-block-start: var(--space-3);
 }
 
 :is(.service-card, .insight-card[href]) {
