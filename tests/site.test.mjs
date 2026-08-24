@@ -156,6 +156,16 @@ test('listing pages contain complete card sets', async () => {
   assert.ok((blog.match(/data-article-link/g) || []).length >= 3);
 });
 
+test('services page uses equal cards with one bottom-aligned action', async () => {
+  const services = await readFile(new URL('../services.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.equal((services.match(/class="cta-row"/g) || []).length, 4);
+  assert.match(css, /\.service-listing\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);[^}]*grid-auto-rows:\s*1fr;/s);
+  assert.match(css, /\.service-listing \.listing-card--lead\s*\{[^}]*grid-column:\s*auto;/s);
+  assert.match(css, /\.service-listing \.cta-row\s*\{[^}]*width:\s*100%;[^}]*margin-block-start:\s*auto;[^}]*border-block-start:\s*var\(--line-thin\) solid var\(--color-border\)/s);
+  assert.match(css, /\.service-listing \.cta-row > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
+});
+
 test('contacts page contains a labeled lead form', async () => {
   const html = await readFile(new URL('../contacts.html', import.meta.url), 'utf8');
   assert.match(html, /data-contact-form/);
