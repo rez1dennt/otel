@@ -1517,6 +1517,7 @@ body:has(.mission-panel) .page-hero__media img {
 }
 
 .insight-card .card-link-cue {
+  margin-block-end: 0;
   min-height: var(--space-8);
   align-items: center;
   padding: 0;

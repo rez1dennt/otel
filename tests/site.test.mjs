@@ -465,7 +465,7 @@ test('wide case rows stay unboxed while material actions share one cue style', a
   const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
 
   assert.match(blog, /<button class="text-link card-link-cue"[^>]*data-modal-open[^>]*>Запросить материал<\/button>/);
-  assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*min-height:\s*var\(--space-8\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
+  assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*margin-block-end:\s*0;[^}]*min-height:\s*var\(--space-8\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
   assert.match(css, /\.project-listing > a\s*\{[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
   assert.doesNotMatch(css, /\.project-listing > a,\s*\.article-listing > a\s*\{[^}]*border:/s);
   assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-listing > a:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);/s);
