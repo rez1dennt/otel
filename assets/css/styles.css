@@ -1983,7 +1983,7 @@ body:has(.contact-form) .contact-details::before {
   z-index: 100;
   display: grid;
   place-items: center;
-  padding: var(--space-5);
+  padding: var(--space-3);
   overflow-y: auto;
   visibility: hidden;
   opacity: 0;
@@ -2008,8 +2008,8 @@ body:has(.contact-form) .contact-details::before {
 .modal__panel {
   position: relative;
   z-index: 1;
-  width: min(100%, 35rem);
-  padding: var(--space-8);
+  width: min(100%, 30rem);
+  padding: var(--space-6);
   border: var(--line-thin) solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -2023,18 +2023,19 @@ body:has(.contact-form) .contact-details::before {
 }
 
 .modal__panel h2 {
-  max-width: 12ch;
-  margin-block-end: var(--space-4);
-  font-size: clamp(var(--text-2xl), 4vw, 2.625rem);
+  max-width: none;
+  margin-block-end: var(--space-2);
+  padding-inline-end: var(--space-10);
+  font-size: var(--text-2xl);
 }
 
 .modal__close {
   position: absolute;
-  inset-block-start: var(--space-5);
-  inset-inline-end: var(--space-5);
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
   display: grid;
-  width: var(--control-md);
-  height: var(--control-md);
+  width: calc(var(--control-md) - var(--space-2));
+  height: calc(var(--control-md) - var(--space-2));
   place-items: center;
   border: var(--line-thin) solid var(--color-border);
   border-radius: var(--radius-pill);
@@ -2085,6 +2086,44 @@ body:has(.contact-form) .contact-details::before {
 
 [data-error-for]:empty {
   display: none;
+}
+
+.modal__panel > p:not(.eyebrow) {
+  margin-block-end: var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.modal [data-lead-form] {
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.modal [data-lead-form] label:not(.checkbox) {
+  margin-block-start: 0;
+  font-size: var(--text-xs);
+  line-height: 1.2;
+}
+
+.modal [data-lead-form] input:not([type="checkbox"]) {
+  min-height: calc(var(--control-md) - var(--space-2));
+}
+
+.modal [data-lead-form] textarea {
+  min-height: var(--space-16);
+  padding-block: var(--space-2);
+}
+
+.modal [data-lead-form] .checkbox {
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
+.modal [data-lead-form] .form-status {
+  min-height: 0;
+  font-size: var(--text-xs);
+  line-height: 1.35;
 }
 
 .checkbox {
@@ -2934,11 +2973,11 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .modal__panel {
-    padding: var(--space-6) var(--space-5);
+    padding: var(--space-5);
   }
 
   .modal__panel h2 {
-    max-width: 11ch;
+    max-width: none;
     margin-block-end: var(--space-2);
     padding-inline-end: var(--space-10);
     font-size: var(--text-2xl);

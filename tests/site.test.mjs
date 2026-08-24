@@ -448,9 +448,14 @@ test('mobile marketing headings are centered and avoid narrow balanced columns',
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.hero h1,\s*\.section-heading h2,\s*\.service-card h3\s*\{[^}]*width:\s*100%;[^}]*text-align:\s*center;[^}]*text-wrap:\s*pretty;/s);
 });
 
-test('mobile modal removes empty error rows and uses compact density', async () => {
+test('lead modal uses compact density on desktop and mobile', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);
-  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.modal__panel h2\s*\{[^}]*font-size:\s*var\(--text-2xl\)/s);
-  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\)/s);
+  assert.match(css, /\.modal\s*\{[^}]*padding:\s*var\(--space-3\);[^}]*overflow-y:\s*auto;/s);
+  assert.match(css, /\.modal__panel\s*\{[^}]*width:\s*min\(100%,\s*30rem\);[^}]*padding:\s*var\(--space-6\)/s);
+  assert.match(css, /\.modal__panel h2\s*\{[^}]*max-width:\s*none;[^}]*margin-block-end:\s*var\(--space-2\);[^}]*font-size:\s*var\(--text-2xl\)/s);
+  assert.match(css, /\.modal \[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\);[^}]*margin-block-start:\s*var\(--space-3\)/s);
+  assert.match(css, /\.modal \[data-lead-form\] input:not\(\[type="checkbox"\]\)\s*\{[^}]*min-height:\s*calc\(var\(--control-md\) - var\(--space-2\)\)/s);
+  assert.match(css, /\.modal \[data-lead-form\] textarea\s*\{[^}]*min-height:\s*var\(--space-16\)/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.modal__panel\s*\{[^}]*padding:\s*var\(--space-5\)/s);
 });
