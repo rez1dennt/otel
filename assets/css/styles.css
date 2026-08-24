@@ -2210,7 +2210,9 @@ body:has(.contact-form) .contact-details::before {
 
 .social-links {
   display: flex;
+  width: 100%;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-2);
   margin-block-start: var(--space-4);
 }
