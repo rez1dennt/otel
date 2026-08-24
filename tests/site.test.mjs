@@ -619,7 +619,7 @@ test('card navigation cues expose desktop, keyboard and touch affordances', asyn
   assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.insight-card\[href\]\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*border-color:\s*var\(--color-accent\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
   assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-card\[data-reveal\]:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*\}/s);
   assert.doesNotMatch(css, /\.project-card\[data-reveal\]:hover\s*\{[^}]*(?:border-color|box-shadow):/s);
-  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):hover \.card-link-cue\s*\{[^}]*border-color:\s*var\(--color-action\);[^}]*background:\s*var\(--color-surface-subtle\);[^}]*color:\s*var\(--color-action\);/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):hover \.card-link-cue,\s*\.service-card:has\(h3 a:focus-visible\) \.card-link-cue\s*\{[^}]*border-color:\s*var\(--color-action\);[^}]*background:\s*var\(--color-surface-subtle\);[^}]*color:\s*var\(--color-action\);/s);
   assert.match(css, /a:hover \.image-frame img\s*\{[^}]*scale:\s*1\.025;/s);
   assert.match(css, /:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):active\s*\{[^}]*translate:\s*0 var\(--space-1\);/s);
 });
