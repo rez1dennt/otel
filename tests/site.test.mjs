@@ -30,6 +30,42 @@ const marketingPages = [
   'contacts.html'
 ];
 
+const cleanContentPages = {
+  'poleznoe/index.html': 'Полезное',
+  'poleznoe/stati/kak-provesti-audit-prodazh-otelya/index.html': 'Как провести аудит продаж отеля',
+  'poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/index.html': 'Продажи отеля как система',
+  'poleznoe/materialy/chek-list-audita-prodazh/index.html': 'Чек-лист аудита продаж отеля',
+  'kejsy/index.html': 'Кейсы',
+  'kejsy/rost-pryamyh-prodazh/index.html': 'Рост прямых продаж'
+};
+
+const cleanPublicPaths = [
+  '/poleznoe/',
+  '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
+  '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+  '/poleznoe/materialy/chek-list-audita-prodazh/',
+  '/kejsy/',
+  '/kejsy/rost-pryamyh-prodazh/'
+];
+
+function projectFileFromReference(pageFile, reference) {
+  const path = reference.split(/[?#]/)[0];
+  if (!path) return null;
+  if (path.startsWith('/')) {
+    const relative = path.slice(1);
+    return new URL(`../${relative}${path.endsWith('/') ? 'index.html' : ''}`, import.meta.url);
+  }
+  const pageUrl = new URL(`../${pageFile}`, import.meta.url);
+  const resolved = new URL(path, pageUrl);
+  if (path.endsWith('/')) return new URL('index.html', resolved);
+  return resolved;
+}
+
+test('clean URL resolver maps root assets and trailing-slash pages', () => {
+  assert.match(projectFileFromReference('index.html', '/assets/css/styles.css').pathname, /assets\/css\/styles\.css$/);
+  assert.match(projectFileFromReference('index.html', '/poleznoe/').pathname, /poleznoe\/index\.html$/);
+});
+
 for (const [file, heading] of Object.entries(pages)) {
   test(`${file} contains the shared semantic contract`, async () => {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
