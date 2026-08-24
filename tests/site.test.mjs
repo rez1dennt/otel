@@ -247,6 +247,19 @@ test('article page links to two related materials', async () => {
   assert.ok((html.match(/data-related-material/g) || []).length >= 2);
 });
 
+test('article and case examples expose reusable field zones', async () => {
+  const article = await readFile(new URL('../poleznoe/stati/kak-provesti-audit-prodazh-otelya/index.html', import.meta.url), 'utf8');
+  const casePage = await readFile(new URL('../kejsy/rost-pryamyh-prodazh/index.html', import.meta.url), 'utf8');
+
+  for (const id of ['data', 'channels', 'team']) assert.match(article, new RegExp(`id="${id}"`));
+  assert.match(article, /"@type":"Article"/);
+  assert.ok((article.match(/data-related-material/g) || []).length >= 2);
+
+  for (const id of ['context', 'task', 'work', 'result']) assert.match(casePage, new RegExp(`id="${id}"`));
+  assert.match(casePage, /"@type":"CreativeWork"/);
+  assert.doesNotMatch(casePage, /\+\d+%|₽|руб(?:\.|лей)/i);
+});
+
 test('mobile detail grid can shrink below content intrinsic width', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.detail-hero__grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
