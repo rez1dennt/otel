@@ -362,12 +362,23 @@ test('Cookie settings use the shared button system', async () => {
   }
 });
 
-test('text-only service card opts out of the image-card row template', async () => {
+test('homepage services use a balanced two by two visual card grid', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
-  assert.match(html, /service-card--text/);
-  assert.match(css, /\.service-card--text\s*\{[^}]*grid-template-rows:\s*1fr/s);
-  assert.match(css, /\.service-card--text\s*\{[^}]*grid-column:\s*span 2/s);
+  assert.equal((html.match(/data-service-card/g) || []).length, 4);
+  assert.match(css, /\.service-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s);
+  assert.match(css, /\.service-card\s*\{[^}]*min-height:\s*25rem;[^}]*grid-template-rows:\s*12rem 1fr/s);
+  assert.match(css, /\.service-card--wide,\s*\.service-card--text\s*\{[^}]*grid-column:\s*auto;/s);
+  assert.match(css, /\.service-card--text::before\s*\{[^}]*background-image:\s*url\("\.\.\/images\/article-guest-experience\.webp"\)/s);
+  assert.match(css, /\.service-card h3\s*\{[^}]*max-width:\s*none;[^}]*text-wrap:\s*pretty;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.service-card\s*\{[^}]*min-height:\s*24rem;[^}]*grid-template-rows:\s*12rem 1fr/s);
+});
+
+test('client photography is used in personal brand sections', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.about-panel__media\s*\{[^}]*background-image:\s*url\("\.\.\/images\/client-home-about\.webp"\)/s);
+  assert.match(css, /body:has\(\.mission-panel\) \.page-hero__media\s*\{[^}]*background-image:\s*url\("\.\.\/images\/client-about-hero\.webp"\)/s);
+  assert.match(css, /body:has\(\.contact-form\) \.contact-details::before\s*\{[^}]*background-image:\s*url\("\.\.\/images\/client-contact\.webp"\)/s);
 });
 
 test('contact layout uses bounded typography and safe wrapping', async () => {

@@ -685,15 +685,15 @@ a:hover .image-frame img {
 
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-5);
 }
 
 .service-card {
   position: relative;
   display: grid;
-  min-height: 28rem;
-  grid-template-rows: 13rem 1fr;
+  min-height: 25rem;
+  grid-template-rows: 12rem 1fr;
   overflow: hidden;
   border: var(--line-thin) solid rgb(208 197 184 / 0.62);
   border-radius: var(--radius-md);
@@ -702,23 +702,30 @@ a:hover .image-frame img {
   text-decoration: none;
 }
 
-.service-card--wide {
-  grid-column: span 2;
+.service-card--wide,
+.service-card--text {
+  grid-column: auto;
 }
 
 .service-card--tone {
-  background: var(--color-surface-subtle);
+  background: var(--color-surface);
 }
 
 .service-card--text {
-  grid-column: span 2;
-  min-height: 28rem;
-  grid-template-rows: 1fr;
+  min-height: 25rem;
+  grid-template-rows: 12rem 1fr;
+}
+
+.service-card--text::before {
+  background-image: url("../images/article-guest-experience.webp");
+  background-position: center;
+  background-size: cover;
+  content: "";
 }
 
 .service-card--text .service-card__body {
   min-height: 100%;
-  align-content: end;
+  align-content: start;
 }
 
 .service-card .image-frame {
@@ -743,9 +750,10 @@ a:hover .image-frame img {
 }
 
 .service-card h3 {
-  max-width: 15ch;
+  max-width: none;
   margin-block-end: var(--space-3);
   font-size: var(--text-xl);
+  text-wrap: pretty;
 }
 
 .service-card p {
@@ -964,6 +972,13 @@ a:hover .image-frame img {
 .about-panel__media {
   min-height: 34rem;
   border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  background-image: url("../images/client-home-about.webp");
+  background-position: center;
+  background-size: cover;
+}
+
+.about-panel__media img {
+  visibility: hidden;
 }
 
 .principle-list {
@@ -1362,6 +1377,16 @@ a:hover .image-frame img {
 .page-hero__media {
   min-height: 32rem;
   border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+}
+
+body:has(.mission-panel) .page-hero__media {
+  background-image: url("../images/client-about-hero.webp");
+  background-position: center 28%;
+  background-size: cover;
+}
+
+body:has(.mission-panel) .page-hero__media img {
+  visibility: hidden;
 }
 
 .page-hero__center {
@@ -1798,9 +1823,20 @@ a:hover .image-frame img {
 }
 
 .contact-details {
+  overflow: hidden;
   padding: var(--space-8);
   border-radius: var(--radius-lg);
   background: var(--color-surface-subtle);
+}
+
+body:has(.contact-form) .contact-details::before {
+  display: block;
+  height: calc(var(--space-20) * 3);
+  margin: calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-8);
+  background-image: url("../images/client-contact.webp");
+  background-position: center 34%;
+  background-size: cover;
+  content: "";
 }
 
 .contact-details > p:not(.eyebrow) {
@@ -2531,14 +2567,14 @@ a:hover .image-frame img {
   }
 
   .service-card {
-    min-height: 26rem;
-    grid-template-rows: 13rem 1fr;
+    min-height: 24rem;
+    grid-template-rows: 12rem 1fr;
   }
 
   .service-card--text {
-    grid-column: span 1;
-    min-height: 22rem;
-    grid-template-rows: 1fr;
+    grid-column: auto;
+    min-height: 24rem;
+    grid-template-rows: 12rem 1fr;
   }
 
   .situations-intro {
