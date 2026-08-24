@@ -2213,7 +2213,8 @@ body:has(.contact-form) .contact-details::before {
 
 .service-card__actions .text-link {
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: var(--space-2);
   min-height: var(--control-md);
   justify-self: stretch;
   padding: 0 var(--space-1);
