@@ -1609,7 +1609,8 @@ body:has(.mission-panel) .page-hero__media img {
 }
 
 .detail-hero__grid .image-frame {
-  min-height: 34rem;
+  min-height: 0;
+  block-size: 34rem;
 }
 
 .detail-layout {
@@ -3223,7 +3224,8 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .detail-hero__grid .image-frame {
-    min-height: 22rem;
+    min-height: 0;
+    block-size: 22rem;
   }
 
   .detail-aside,
