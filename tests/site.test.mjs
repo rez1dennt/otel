@@ -309,7 +309,7 @@ test('social controls use logo-only Telegram, MAX and Dzen assets', async () => 
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.social-links\s*\{[^}]*width:\s*100%;[^}]*justify-content:\s*center;/s);
   assert.match(css, /\.social-link\s*\{[^}]*width:\s*var\(--control-md\);[^}]*height:\s*var\(--control-md\);[^}]*padding:\s*0;[^}]*font-size:\s*0;/s);
-  assert.match(css, /\.social-link::before\s*\{[^}]*width:\s*var\(--space-6\);[^}]*height:\s*var\(--space-6\);[^}]*background-position:\s*center;/s);
+  assert.match(css, /\.social-link::before\s*\{[^}]*display:\s*block;[^}]*width:\s*var\(--space-6\);[^}]*height:\s*var\(--space-6\);[^}]*background-position:\s*center;/s);
   assert.match(css, /\.social-link:nth-child\(1\)::before\s*\{[^}]*url\("\.\.\/icons\/social-telegram\.svg"\)/s);
   assert.match(css, /\.social-link:nth-child\(2\)::before\s*\{[^}]*url\("\.\.\/icons\/social-max\.svg"\)/s);
   assert.match(css, /\.social-link:nth-child\(3\)::before\s*\{[^}]*url\("\.\.\/icons\/social-dzen\.svg"\)/s);

@@ -2235,6 +2235,7 @@ body:has(.contact-form) .contact-details::before {
 }
 
 .social-link::before {
+  display: block;
   width: var(--space-6);
   height: var(--space-6);
   background-position: center;
