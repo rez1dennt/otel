@@ -166,6 +166,23 @@ test('services page uses equal cards with one bottom-aligned action', async () =
   assert.match(css, /\.service-listing \.cta-row > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
 });
 
+test('six-step services process matches the bordered card reference', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.process-section:has\(\.process-list--six\)\s*\{[^}]*background:\s*radial-gradient/s);
+  assert.match(css, /\.process-list--six\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);[^}]*gap:\s*var\(--space-5\)/s);
+  assert.match(css, /\.process-list--six li,\s*\.process-list--six li:nth-child\(3n\),\s*\.process-list--six li:nth-child\(n \+ 4\)\s*\{[^}]*min-height:\s*18rem;[^}]*border:\s*var\(--line-thin\) solid var\(--ref-muted\);[^}]*border-radius:\s*var\(--radius-md\)/s);
+  assert.match(css, /\.process-list--six li > span\s*\{[^}]*width:\s*var\(--control-md\);[^}]*border-radius:\s*var\(--radius-pill\)/s);
+  assert.match(css, /\.process-list--six li::before\s*\{[^}]*linear-gradient\(90deg,\s*var\(--ref-blush\) 0 50%,\s*var\(--ref-muted\) 50% 100%\)/s);
+  assert.match(css, /\.process-list--six::after\s*\{[^}]*content:\s*"Прозрачно на каждом этапе/s);
+  assert.equal((css.match(/\.process-list--six li:nth-child\(\d\)::after\s*\{\s*mask-image:\s*url\("\.\.\/icons\/process-/g) || []).length, 6);
+
+  const iconNames = ['conversation', 'document', 'diagnostics', 'solution', 'plan', 'support'];
+  for (const name of iconNames) {
+    const svg = await readFile(new URL(`../assets/icons/process-${name}.svg`, import.meta.url), 'utf8');
+    assert.match(svg, /<svg/);
+  }
+});
+
 test('contacts page contains a labeled lead form', async () => {
   const html = await readFile(new URL('../contacts.html', import.meta.url), 'utf8');
   assert.match(html, /data-contact-form/);
