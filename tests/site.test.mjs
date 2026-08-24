@@ -771,3 +771,12 @@ test('detail hero media uses definite responsive block sizes', async () => {
   assert.match(css, /\.detail-hero__grid \.image-frame\s*\{[^}]*min-height:\s*0;[^}]*block-size:\s*34rem;/s);
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.detail-hero__grid \.image-frame\s*\{[^}]*min-height:\s*0;[^}]*block-size:\s*22rem;/s);
 });
+
+test('case listing cues and mobile contact panels use their approved visual contracts', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(css, /\.project-listing \.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*margin-block-end:\s*0;/s);
+  assert.match(css, /--gradient-contact-mobile:\s*radial-gradient\(circle at 100% 100%,[^;]+linear-gradient\(145deg, var\(--ref-olive\), var\(--ref-olive-hover\)\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.contact-panel\s*\{[^}]*background:\s*var\(--gradient-contact-mobile\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.contact-panel__art\s*\{[^}]*display:\s*none;/s);
+});

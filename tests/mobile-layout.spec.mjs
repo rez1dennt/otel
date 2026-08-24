@@ -158,3 +158,41 @@ test('detail hero images fill their complete frames at every target width', asyn
     }
   }
 });
+
+test('case listing cues stay centered and mobile contact art stays clear of copy', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/kejsy/');
+
+  const cues = await page.locator('.project-listing .card-link-cue').evaluateAll((elements) => elements.map((cue) => {
+    const style = getComputedStyle(cue);
+    const cueRect = cue.getBoundingClientRect();
+    const range = document.createRange();
+    range.selectNodeContents(cue);
+    const textRect = range.getBoundingClientRect();
+    return {
+      display: style.display,
+      alignItems: style.alignItems,
+      justifyContent: style.justifyContent,
+      insetDifference: Math.abs((textRect.top - cueRect.top) - (cueRect.bottom - textRect.bottom))
+    };
+  }));
+
+  expect(cues).toHaveLength(3);
+  expect(cues.every((cue) => cue.display === 'flex' && cue.alignItems === 'center' && cue.justifyContent === 'center')).toBe(true);
+  expect(Math.max(...cues.map((cue) => cue.insetDifference))).toBeLessThanOrEqual(1);
+
+  for (const width of [360, 320]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/kejsy/');
+    const panel = page.locator('.contact-panel');
+    await expect(panel.locator('.contact-panel__art')).toHaveCSS('display', 'none');
+    await expect(panel).toHaveCSS('background-image', /100% 100%/);
+    const geometry = await panel.evaluate((element) => ({
+      right: element.getBoundingClientRect().right,
+      viewport: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth
+    }));
+    expect(geometry.right).toBeLessThanOrEqual(geometry.viewport);
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
+  }
+});
