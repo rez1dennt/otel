@@ -330,7 +330,7 @@ p {
 }
 
 .text-link::after {
-  content: "→";
+  content: "\2192";
   transition: translate var(--duration-fast) var(--ease-out);
 }
 

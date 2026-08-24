@@ -382,6 +382,7 @@ test('service cards expose one aligned minimalist action row', async () => {
   assert.match(css, /\.service-card__actions\s*\{[^}]*width:\s*100%;[^}]*border-block-start:\s*var\(--line-thin\) solid var\(--color-border\)/s);
   assert.match(css, /\.service-card__actions > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
   assert.match(css, /\.service-card__actions \.text-link\s*\{[^}]*width:\s*100%;[^}]*justify-content:\s*flex-start;[^}]*gap:\s*var\(--space-2\);[^}]*min-height:\s*var\(--control-md\)/s);
+  assert.match(css, /\.text-link::after\s*\{[^}]*content:\s*"\\2192";/s);
 });
 
 test('client photography is used in personal brand sections', async () => {
