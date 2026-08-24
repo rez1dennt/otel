@@ -703,6 +703,11 @@ test('mobile marketing headings are centered and avoid narrow balanced columns',
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.hero h1,\s*\.section-heading h2,\s*\.service-card h3\s*\{[^}]*width:\s*100%;[^}]*text-align:\s*center;[^}]*text-wrap:\s*pretty;/s);
 });
 
+test('mobile final panels use a zero-minimum grid track', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.final-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s);
+});
+
 test('lead modal uses compact density on desktop and mobile', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);

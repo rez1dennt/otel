@@ -2993,6 +2993,10 @@ body:has(.contact-form) .contact-details::before {
     grid-template-columns: 1fr;
   }
 
+  .final-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .bio-layout {
     grid-template-columns: 1fr;
   }
