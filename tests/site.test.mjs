@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, stat } from 'node:fs/promises';
 
 const pages = {
   'index.html': 'Продажи отеля работают как система',
@@ -784,4 +784,12 @@ test('case listing cues and mobile contact panels use their approved visual cont
 test('case listing descriptions keep a twelve pixel action gap', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.project-listing p\s*\{[^}]*margin-block-end:\s*var\(--space-3\);/s);
+});
+
+test('about split hero uses the approved gutter and optimized portrait asset', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  const asset = await stat(new URL('../assets/images/client-about-hero.webp', import.meta.url));
+
+  assert.match(css, /\.page-hero--split\s*\{[^}]*margin-inline:\s*var\(--space-5\);[^}]*margin-block-start:\s*var\(--space-5\);/s);
+  assert.ok(asset.size <= 200 * 1024, `about hero is ${asset.size} bytes`);
 });

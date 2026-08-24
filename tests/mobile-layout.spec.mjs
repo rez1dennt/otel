@@ -213,3 +213,32 @@ test('case listing descriptions stay separated from actions at every target widt
     expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.viewportWidth);
   }
 });
+
+test('about hero keeps its gutter and optimized background at every target width', async ({ page }) => {
+  for (const width of [1280, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/about.html');
+
+    const metrics = await page.evaluate(async () => {
+      const header = document.querySelector('.site-header');
+      const hero = document.querySelector('.page-hero--split');
+      const media = hero.querySelector('.page-hero__media');
+      const backgroundImage = getComputedStyle(media).backgroundImage;
+      const backgroundUrl = backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1];
+      const image = new Image();
+      image.src = backgroundUrl;
+      await image.decode();
+      return {
+        gap: hero.getBoundingClientRect().top - header.getBoundingClientRect().bottom,
+        imageWidth: image.naturalWidth,
+        imageHeight: image.naturalHeight,
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth
+      };
+    });
+
+    expect.soft(metrics.gap, `${width}px hero gap`).toBeGreaterThanOrEqual(20);
+    expect.soft({ width: metrics.imageWidth, height: metrics.imageHeight }).toEqual({ width: 1600, height: 1067 });
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
+  }
+});
