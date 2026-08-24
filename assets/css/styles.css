@@ -2236,12 +2236,13 @@ body:has(.contact-form) .contact-details::before {
 
 .social-link::before {
   display: block;
-  width: var(--space-6);
-  height: var(--space-6);
+  width: var(--space-5);
+  height: var(--space-5);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
   content: "";
+  translate: 0 var(--space-1);
 }
 
 .social-link:nth-child(1)::before {
