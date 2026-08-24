@@ -89,6 +89,22 @@ for (const [file, heading] of Object.entries(pages)) {
   });
 }
 
+for (const [file, heading] of Object.entries(cleanContentPages)) {
+  test(`${file} exposes the clean content-template contract`, async () => {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /<html lang="ru">/);
+    assert.equal((html.match(/<main[\s>]/g) || []).length, 1);
+    assert.equal((html.match(/<h1[\s>]/g) || []).length, 1);
+    assert.match(html, new RegExp(heading));
+    assert.match(html, /<meta name="description" content="[^"]{40,}">/);
+    assert.match(html, /<link rel="canonical" href="https:\/\/example\.ru\/[^".]+\/">/);
+    assert.match(html, /href="\/assets\/css\/styles\.css"/);
+    assert.match(html, /src="\/assets\/js\/main\.js"/);
+    assert.match(html, /href="\/kejsy\/"/);
+    assert.match(html, /href="\/poleznoe\/"/);
+  });
+}
+
 test('design tokens preserve the reference palette', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   for (const color of ['#F2F1EF', '#FAF9F7', '#2D281D', '#66635B', '#3E4136', '#8B745F', '#D0C5B8', '#BABCC1', '#C9B3A4']) {
@@ -296,10 +312,13 @@ test('technical SEO files expose every public page', async () => {
   const sitemap = await readFile(new URL('../sitemap.xml', import.meta.url), 'utf8');
   const manifest = await readFile(new URL('../site.webmanifest', import.meta.url), 'utf8');
   assert.match(robots, /Sitemap: https:\/\/example\.ru\/sitemap\.xml/);
-  for (const file of Object.keys(pages).filter((file) => file !== '404.html')) {
+  const legacyContent = new Set(['blog.html', 'article.html', 'projects.html', 'project.html']);
+  for (const file of Object.keys(pages).filter((file) => file !== '404.html' && !legacyContent.has(file))) {
     const path = file === 'index.html' ? '' : file;
     assert.match(sitemap, new RegExp(`https://example\\.ru/${path}`));
   }
+  for (const path of cleanPublicPaths) assert.match(sitemap, new RegExp(`https://example\\.ru${path}`));
+  for (const file of legacyContent) assert.doesNotMatch(sitemap, new RegExp(file));
   assert.match(manifest, /"theme_color"\s*:\s*"#F2F1EF"/);
 });
 
@@ -322,7 +341,7 @@ test('footer action buttons meet the 24 pixel target minimum', async () => {
 });
 
 test('all local links and images resolve to project files', async () => {
-  for (const file of Object.keys(pages)) {
+  for (const file of [...Object.keys(pages), ...Object.keys(cleanContentPages)]) {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
     const references = [
       ...[...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]),
@@ -330,9 +349,8 @@ test('all local links and images resolve to project files', async () => {
     ];
     for (const reference of references) {
       if (/^(?:https?:|mailto:|tel:|#)/.test(reference)) continue;
-      const localPath = reference.split('#')[0];
-      if (!localPath) continue;
-      await access(new URL(`../${localPath}`, import.meta.url));
+      const target = projectFileFromReference(file, reference);
+      if (target) await access(target);
     }
   }
 });
@@ -379,6 +397,28 @@ test('shared navigation uses the client information architecture', async () => {
     for (const label of ['О проекте', 'Услуги', 'Кейсы', 'Полезное', 'Контакты']) {
       assert.match(html, new RegExp(`>${label}<`), `${file}: ${label}`);
     }
+  }
+});
+
+test('shared navigation points to clean content archives', async () => {
+  for (const file of [...Object.keys(pages), ...Object.keys(cleanContentPages)]) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /href="\/kejsy\/">Кейсы<\/a>/);
+    assert.match(html, /href="\/poleznoe\/">Полезное<\/a>/);
+  }
+});
+
+test('legacy content pages are noindex and canonicalize to clean URLs', async () => {
+  const mapping = {
+    'blog.html': '/poleznoe/',
+    'article.html': '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
+    'projects.html': '/kejsy/',
+    'project.html': '/kejsy/rost-pryamyh-prodazh/'
+  };
+  for (const [file, path] of Object.entries(mapping)) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /<meta name="robots" content="noindex,follow">/);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://example\\.ru${path}">`));
   }
 });
 
@@ -527,10 +567,9 @@ test('navigable cards expose persistent destination cues without duplicating but
   assert.equal((home.match(/>Подробнее об услуге<\/span>/g) || []).length, 4);
   assert.equal((home.match(/>Смотреть кейс<\/span>/g) || []).length, 3);
   assert.equal((projects.match(/>Смотреть кейс<\/span>/g) || []).length, 3);
-  assert.equal((blog.match(/class="card-link-cue"/g) || []).length, 2);
-
-  const modalOnlyMaterial = blog.match(/<article class="insight-card"[\s\S]*?<\/article>/)?.[0] ?? '';
-  assert.doesNotMatch(modalOnlyMaterial, /<span class="card-link-cue"/);
+  assert.equal((blog.match(/class="card-link-cue"/g) || []).length, 3);
+  assert.equal((blog.match(/<a class="insight-card"/g) || []).length, 3);
+  assert.doesNotMatch(blog, /<article class="insight-card"/);
 });
 
 test('card navigation cues expose desktop, keyboard and touch affordances', async () => {
@@ -552,7 +591,7 @@ test('wide case rows stay unboxed while material actions share one cue style', a
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
 
-  assert.match(blog, /<button class="text-link card-link-cue"[^>]*data-modal-open[^>]*>Запросить материал<\/button>/);
+  assert.match(blog, /<a class="insight-card" href="\/poleznoe\/materialy\/chek-list-audita-prodazh\/"[^>]*>[\s\S]*?<span class="card-link-cue">Открыть материал<\/span>[\s\S]*?<\/a>/);
   assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*margin-block-end:\s*0;[^}]*min-height:\s*var\(--space-8\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
   assert.match(css, /\.project-listing > a\s*\{[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
   assert.doesNotMatch(css, /\.project-listing > a,\s*\.article-listing > a\s*\{[^}]*border:/s);

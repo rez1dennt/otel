@@ -135,11 +135,13 @@ function setupMenu() {
 }
 
 function setupCurrentNavigation() {
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPath = window.location.pathname;
   document.querySelectorAll('.site-nav a, [data-mobile-menu] a').forEach((link) => {
-    const destination = link.getAttribute('href')?.split('#')[0];
-    link.toggleAttribute('aria-current', destination === currentPage);
-    if (destination === currentPage) link.setAttribute('aria-current', 'page');
+    const destination = new URL(link.href, window.location.origin).pathname;
+    const exact = destination === currentPath;
+    const section = destination !== '/' && destination.endsWith('/') && currentPath.startsWith(destination);
+    link.toggleAttribute('aria-current', exact || section);
+    if (exact || section) link.setAttribute('aria-current', 'page');
   });
 }
 
