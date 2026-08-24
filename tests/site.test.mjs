@@ -192,6 +192,21 @@ test('listing pages contain complete card sets', async () => {
   assert.ok((blog.match(/data-article-link/g) || []).length >= 3);
 });
 
+test('clean archives link every card to its matching template', async () => {
+  const useful = await readFile(new URL('../poleznoe/index.html', import.meta.url), 'utf8');
+  const cases = await readFile(new URL('../kejsy/index.html', import.meta.url), 'utf8');
+
+  for (const href of [
+    '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
+    '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+    '/poleznoe/materialy/chek-list-audita-prodazh/'
+  ]) assert.match(useful, new RegExp(`href="${href}"`));
+
+  assert.equal((useful.match(/class="insight-card"/g) || []).length, 3);
+  assert.match(cases, /href="\/kejsy\/rost-pryamyh-prodazh\/"/);
+  assert.ok((cases.match(/data-project-link/g) || []).length >= 3);
+});
+
 test('services page uses equal cards with one bottom-aligned action', async () => {
   const services = await readFile(new URL('../services.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
