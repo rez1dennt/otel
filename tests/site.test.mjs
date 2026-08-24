@@ -364,6 +364,16 @@ test('structured data blocks contain valid JSON', async () => {
   }
 });
 
+test('clean detail templates contain valid conditional structured data', async () => {
+  const files = Object.keys(cleanContentPages).filter((file) => file !== 'poleznoe/index.html' && file !== 'kejsy/index.html');
+  for (const file of files) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+    assert.ok(blocks.length > 0, file);
+    for (const block of blocks) assert.doesNotThrow(() => JSON.parse(block[1]), file);
+  }
+});
+
 test('navigation links keep accessible targets and remain available without a menu toggle', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-nav a\s*\{[^}]*min-height:/s);
