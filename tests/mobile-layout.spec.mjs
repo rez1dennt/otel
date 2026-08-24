@@ -178,7 +178,7 @@ test('case listing cues stay centered and mobile contact art stays clear of copy
   }));
 
   expect(cues).toHaveLength(3);
-  expect(cues.every((cue) => cue.display === 'flex' && cue.alignItems === 'center' && cue.justifyContent === 'center')).toBe(true);
+  expect(cues.every((cue) => cue.display === 'inline-flex' && cue.alignItems === 'center' && cue.justifyContent === 'center')).toBe(true);
   expect(Math.max(...cues.map((cue) => cue.insetDifference))).toBeLessThanOrEqual(1);
 
   for (const width of [360, 320]) {

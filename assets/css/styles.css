@@ -67,6 +67,7 @@
   --gradient-hero: linear-gradient(90deg, rgb(242 241 239 / 0.98) 0%, rgb(242 241 239 / 0.86) 38%, rgb(242 241 239 / 0.12) 70%);
   --gradient-hero-mobile: linear-gradient(90deg, rgb(242 241 239 / 0.97) 0%, rgb(242 241 239 / 0.84) 58%, rgb(242 241 239 / 0.28) 100%);
   --gradient-contact: radial-gradient(circle at 80% 20%, rgb(201 179 164 / 0.48), transparent 34%), linear-gradient(145deg, var(--ref-olive), var(--ref-olive-hover));
+  --gradient-contact-mobile: radial-gradient(circle at 100% 100%, rgb(201 179 164 / 0.18), transparent 44%), linear-gradient(145deg, var(--ref-olive), var(--ref-olive-hover));
 
   /* Semantic tokens */
   --color-page: var(--ref-milk);
@@ -1487,6 +1488,13 @@ body:has(.mission-panel) .page-hero__media img {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.project-listing .card-link-cue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-block-end: 0;
 }
 
 .listing-card h2,
@@ -3150,6 +3158,14 @@ body:has(.contact-form) .contact-details::before {
   .contact-panel {
     min-height: 0;
     padding: var(--space-6);
+  }
+
+  .contact-panel {
+    background: var(--gradient-contact-mobile);
+  }
+
+  .contact-panel__art {
+    display: none;
   }
 
   .footer-bottom {
