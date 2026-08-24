@@ -242,3 +242,25 @@ test('about hero keeps its gutter and optimized background at every target width
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
   }
 });
+
+test('mission quote shares the content left axis at every target width', async ({ page }) => {
+  for (const width of [1280, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/about.html');
+
+    const metrics = await page.evaluate(() => {
+      const panel = document.querySelector('.mission-panel');
+      const body = panel.querySelector('p:not(.eyebrow):not(.script-accent)');
+      const quote = panel.querySelector('.script-accent');
+
+      return {
+        leftDelta: Math.abs(quote.getBoundingClientRect().left - body.getBoundingClientRect().left),
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth
+      };
+    });
+
+    expect.soft(metrics.leftDelta, `${width}px quote left axis`).toBeLessThanOrEqual(1);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
+  }
+});

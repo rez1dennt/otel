@@ -793,3 +793,12 @@ test('about split hero uses the approved gutter and optimized portrait asset', a
   assert.match(css, /\.page-hero--split\s*\{[^}]*margin-inline:\s*var\(--space-5\);[^}]*margin-block-start:\s*var\(--space-5\);/s);
   assert.ok(asset.size <= 200 * 1024, `about hero is ${asset.size} bytes`);
 });
+
+test('mission quote keeps its visual tokens and aligns from the left', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(
+    css,
+    /\.mission-panel \.script-accent\s*\{[^}]*max-width:\s*30ch;[^}]*margin:\s*var\(--space-4\) auto 0 0;[^}]*color:\s*var\(--color-accent\);[^}]*font-size:\s*var\(--text-2xl\);[^}]*line-height:\s*1\.45;/s
+  );
+});

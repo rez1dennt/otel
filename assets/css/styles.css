@@ -2552,7 +2552,7 @@ body:has(.contact-form) .contact-details::before {
 
 .mission-panel .script-accent {
   max-width: 30ch;
-  margin: var(--space-4) 0 0 auto;
+  margin: var(--space-4) auto 0 0;
   color: var(--color-accent);
   font-size: var(--text-2xl);
   line-height: 1.45;
