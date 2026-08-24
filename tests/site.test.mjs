@@ -363,7 +363,12 @@ test('FAQ and companion card have independent animated layout contracts', async 
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   const js = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   assert.match(css, /\.final-grid\s*\{[^}]*align-items:\s*start/s);
-  assert.match(css, /\.accordion__panel\.is-open/);
+  assert.match(css, /\.faq-panel\s*\{[^}]*min-height:\s*0;/s);
+  assert.match(css, /\.contact-panel\s*\{[^}]*min-height:\s*42rem;[^}]*position:\s*relative;/s);
+  assert.match(css, /\.accordion__panel\s*\{[^}]*grid-template-rows:\s*0fr;[^}]*transition:\s*grid-template-rows var\(--duration-base\)/s);
+  assert.match(css, /\.accordion__panel\.is-open\s*\{[^}]*grid-template-rows:\s*1fr;[^}]*visibility:\s*visible;[^}]*opacity:\s*1;/s);
+  assert.match(css, /\.accordion__panel > p,\s*\.accordion__content\s*\{[^}]*padding-block-end:\s*0;[^}]*transition:\s*padding-block-end var\(--duration-base\)/s);
+  assert.match(css, /\.accordion__panel\.is-open > p,\s*\.accordion__panel\.is-open \.accordion__content\s*\{[^}]*padding-block-end:\s*var\(--space-5\)/s);
   assert.doesNotMatch(js, /panel\.hidden\s*=\s*expanded/);
 });
 

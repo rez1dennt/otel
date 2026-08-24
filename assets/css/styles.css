@@ -1086,12 +1086,12 @@ a:hover .image-frame img {
 
 .faq-panel,
 .contact-panel {
-  min-height: 42rem;
   padding: clamp(var(--space-8), 5vw, var(--space-12));
   border-radius: var(--radius-lg);
 }
 
 .faq-panel {
+  min-height: 0;
   background: var(--color-surface);
 }
 
@@ -1163,6 +1163,12 @@ a:hover .image-frame img {
 .accordion__panel > p,
 .accordion__content {
   margin-block: 0;
+  padding-block-end: 0;
+  transition: padding-block-end var(--duration-base) var(--ease-out);
+}
+
+.accordion__panel.is-open > p,
+.accordion__panel.is-open .accordion__content {
   padding-block-end: var(--space-5);
 }
 
@@ -1173,6 +1179,7 @@ a:hover .image-frame img {
 }
 
 .contact-panel {
+  min-height: 42rem;
   position: relative;
   display: grid;
   overflow: hidden;
