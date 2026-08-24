@@ -611,7 +611,7 @@ test('navigable cards expose persistent destination cues without duplicating but
 test('card navigation cues expose desktop, keyboard and touch affordances', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
 
-  assert.match(css, /\.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*min-height:\s*var\(--control-md\);[^}]*padding-inline:\s*var\(--space-4\);[^}]*border:\s*var\(--line-thin\) solid var\(--color-border\);[^}]*border-radius:\s*var\(--radius-pill\);/s);
+  assert.match(css, /\.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*width:\s*max-content;[^}]*max-width:\s*100%;[^}]*min-height:\s*var\(--control-md\);[^}]*justify-self:\s*start;[^}]*padding-inline:\s*var\(--space-4\);[^}]*border:\s*var\(--line-thin\) solid var\(--color-border\);[^}]*border-radius:\s*var\(--radius-pill\);/s);
   assert.match(css, /\.card-link-cue::after\s*\{[^}]*content:\s*none;/s);
   assert.match(css, /\.service-card h3 a::after\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*content:\s*"";/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*2;/s);
@@ -706,7 +706,7 @@ test('mobile headings keep twenty pixel gutters and expand beyond narrow desktop
 test('mobile content headings share one left-aligned axis', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?main :where\(h1, h2, h3\)\s*\{[^}]*width:\s*100%;[^}]*text-align:\s*start;[^}]*text-wrap:\s*pretty;/s);
-  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.page-hero__center\s*\{[^}]*justify-items:\s*start;[^}]*text-align:\s*start;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.page-hero__center\s*\{[^}]*width:\s*min\(100% - var\(--space-10\), var\(--container\)\);[^}]*justify-items:\s*start;[^}]*margin-inline:\s*auto;[^}]*text-align:\s*start;/s);
 });
 
 test('mobile sections use the compact shared vertical rhythm', async () => {

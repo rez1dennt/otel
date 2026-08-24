@@ -1498,9 +1498,12 @@ body:has(.mission-panel) .page-hero__media img {
 
 .card-link-cue {
   display: inline-flex;
+  width: max-content;
+  max-width: 100%;
   min-height: var(--control-md);
   align-items: center;
   align-self: flex-start;
+  justify-self: start;
   margin-block-start: auto;
   padding-inline: var(--space-4);
   border: var(--line-thin) solid var(--color-border);
@@ -2944,7 +2947,9 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .page-hero__center {
+    width: min(100% - var(--space-10), var(--container));
     justify-items: start;
+    margin-inline: auto;
     text-align: start;
   }
 

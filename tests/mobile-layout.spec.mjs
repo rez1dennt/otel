@@ -41,6 +41,14 @@ for (const width of [360, 320]) {
           .filter((heading) => getComputedStyle(heading).textAlign !== 'start')
           .map((heading) => heading.textContent.trim().replace(/\s+/g, ' '));
 
+        const headingsOutsideGutter = [...document.querySelectorAll('main h1, main h2, main h3')]
+          .filter(visible)
+          .filter((heading) => {
+            const rect = heading.getBoundingClientRect();
+            return rect.left < 19.5 || rect.right > window.innerWidth - 19.5;
+          })
+          .map((heading) => heading.textContent.trim().replace(/\s+/g, ' '));
+
         const arrowActions = [...document.querySelectorAll('.card-link-cue, .service-card__actions .text-link')]
           .filter(visible)
           .filter((action) => getComputedStyle(action, '::after').content.includes('→'))
@@ -48,6 +56,7 @@ for (const width of [360, 320]) {
 
         return {
           nonLeftHeadings,
+          headingsOutsideGutter,
           arrowActions,
           scrollWidth: document.documentElement.scrollWidth,
           viewportWidth: window.innerWidth
@@ -55,6 +64,7 @@ for (const width of [360, 320]) {
       });
 
       expect(audit.nonLeftHeadings, `${route}: heading alignment`).toEqual([]);
+      expect(audit.headingsOutsideGutter, `${route}: 20px heading gutter`).toEqual([]);
       expect(audit.arrowActions, `${route}: arrow actions`).toEqual([]);
       expect(audit.scrollWidth, `${route}: horizontal overflow`).toBeLessThanOrEqual(audit.viewportWidth);
     }
@@ -68,7 +78,16 @@ test('mobile section and action geometry uses the compact tokens', async ({ page
   const sectionPadding = await page.locator('.services-section').evaluate((element) => getComputedStyle(element).paddingBlockStart);
   const cue = await page.locator('.card-link-cue').first().evaluate((element) => {
     const style = getComputedStyle(element);
-    return { minHeight: style.minHeight, borderTopWidth: style.borderTopWidth };
+    const parentStyle = getComputedStyle(element.parentElement);
+    const parentContentWidth = element.parentElement.clientWidth
+      - parseFloat(parentStyle.paddingLeft)
+      - parseFloat(parentStyle.paddingRight);
+    return {
+      minHeight: style.minHeight,
+      borderTopWidth: style.borderTopWidth,
+      width: element.getBoundingClientRect().width,
+      parentContentWidth
+    };
   });
   const actionGeometry = await page.locator('.service-card__actions').first().evaluate((row) => {
     const button = row.querySelector('.text-link');
@@ -76,7 +95,9 @@ test('mobile section and action geometry uses the compact tokens', async ({ page
   });
 
   expect(sectionPadding).toBe('48px');
-  expect(cue).toEqual({ minHeight: '48px', borderTopWidth: '1px' });
+  expect(cue.minHeight).toBe('48px');
+  expect(cue.borderTopWidth).toBe('1px');
+  expect(cue.width).toBeLessThan(cue.parentContentWidth);
   expect(actionGeometry.buttonWidth).toBeLessThan(actionGeometry.rowWidth);
 
   await page.goto('/kejsy/rost-pryamyh-prodazh/');

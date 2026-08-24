@@ -7,7 +7,7 @@ const playwrightCli = resolve('node_modules/@playwright/test/cli.js');
 
 mkdirSync(cacheDirectory, { recursive: true });
 
-const result = spawnSync(process.execPath, [playwrightCli, 'test'], {
+const result = spawnSync(process.execPath, [playwrightCli, 'test', ...process.argv.slice(2)], {
   stdio: 'inherit',
   env: {
     ...process.env,
