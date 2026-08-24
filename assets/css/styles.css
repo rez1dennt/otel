@@ -725,7 +725,7 @@ a:hover .image-frame img {
 
 .service-card--text .service-card__body {
   min-height: 100%;
-  align-content: start;
+  align-content: stretch;
 }
 
 .service-card .image-frame {
@@ -734,7 +734,8 @@ a:hover .image-frame img {
 
 .service-card__body {
   display: grid;
-  align-content: start;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  align-content: stretch;
   padding: var(--space-5);
 }
 
@@ -757,7 +758,7 @@ a:hover .image-frame img {
 }
 
 .service-card p {
-  margin-block-end: var(--space-8);
+  margin-block-end: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   line-height: 1.5;
@@ -2200,20 +2201,31 @@ body:has(.contact-form) .contact-details::before {
 
 .service-card__actions {
   display: grid;
-  gap: var(--space-2);
-  margin-block-start: auto;
-  padding-block-start: var(--space-4);
+  width: 100%;
+  margin-block-start: var(--space-5);
+  padding-block-start: var(--space-3);
+  border-block-start: var(--line-thin) solid var(--color-border);
+}
+
+.service-card__actions > :not(:first-child) {
+  display: none;
 }
 
 .service-card__actions .text-link {
-  min-height: var(--space-8);
-  justify-self: start;
-  padding: 0;
+  width: 100%;
+  justify-content: space-between;
+  min-height: var(--control-md);
+  justify-self: stretch;
+  padding: 0 var(--space-1);
   border: 0;
   background: transparent;
   color: var(--color-text);
   text-align: start;
   cursor: pointer;
+}
+
+.service-card__actions .text-link:hover {
+  color: var(--color-action);
 }
 
 .service-listing {

@@ -374,6 +374,16 @@ test('homepage services use a balanced two by two visual card grid', async () =>
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.service-card\s*\{[^}]*min-height:\s*24rem;[^}]*grid-template-rows:\s*12rem 1fr/s);
 });
 
+test('service cards expose one aligned minimalist action row', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.equal((html.match(/class="service-card__actions"/g) || []).length, 4);
+  assert.match(css, /\.service-card__body\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\) auto;[^}]*align-content:\s*stretch;/s);
+  assert.match(css, /\.service-card__actions\s*\{[^}]*width:\s*100%;[^}]*border-block-start:\s*var\(--line-thin\) solid var\(--color-border\)/s);
+  assert.match(css, /\.service-card__actions > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
+  assert.match(css, /\.service-card__actions \.text-link\s*\{[^}]*width:\s*100%;[^}]*justify-content:\s*space-between;[^}]*min-height:\s*var\(--control-md\)/s);
+});
+
 test('client photography is used in personal brand sections', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.about-panel__media\s*\{[^}]*background-image:\s*url\("\.\.\/images\/client-home-about\.webp"\)/s);
