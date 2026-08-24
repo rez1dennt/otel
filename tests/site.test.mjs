@@ -242,7 +242,7 @@ test('six-step services process matches the bordered card reference', async () =
   assert.match(css, /\.process-list--six li,\s*\.process-list--six li:nth-child\(3n\),\s*\.process-list--six li:nth-child\(n \+ 4\)\s*\{[^}]*min-height:\s*18rem;[^}]*border:\s*var\(--line-thin\) solid var\(--ref-muted\);[^}]*border-radius:\s*var\(--radius-md\)/s);
   assert.match(css, /\.process-list--six li > span\s*\{[^}]*width:\s*var\(--control-md\);[^}]*border-radius:\s*var\(--radius-pill\)/s);
   assert.match(css, /\.process-list--six li::before\s*\{[^}]*linear-gradient\(90deg,\s*var\(--ref-blush\) 0 50%,\s*var\(--ref-muted\) 50% 100%\)/s);
-  assert.match(css, /\.process-list--six::after\s*\{[^}]*content:\s*"Прозрачно на каждом этапе/s);
+  assert.match(css, /\.process-list--six::after\s*\{[^}]*content:\s*attr\(data-process-summary\);/s);
   assert.equal((css.match(/\.process-list--six li:nth-child\(\d\)::after\s*\{\s*mask-image:\s*url\("\.\.\/icons\/process-/g) || []).length, 6);
 
   const iconNames = ['conversation', 'document', 'diagnostics', 'solution', 'plan', 'support'];

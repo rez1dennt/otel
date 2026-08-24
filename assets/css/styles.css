@@ -2536,7 +2536,7 @@ body:has(.contact-form) .contact-details::before {
 
 .bio-timeline article {
   display: grid;
-  grid-template-columns: 5rem minmax(0, 1fr);
+  grid-template-columns: minmax(var(--space-20), max-content) minmax(0, 1fr);
   gap: var(--space-5);
   padding-block: var(--space-6);
   border-block-start: var(--line-thin) solid var(--color-border);
@@ -2670,7 +2670,7 @@ body:has(.contact-form) .contact-details::before {
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--ref-walnut) 18%, transparent);
   color: var(--ref-blush);
-  content: "Прозрачно на каждом этапе — вы всегда знаете, что происходит и на каком мы этапе.";
+  content: attr(data-process-summary);
   font-family: var(--font-display);
   font-size: var(--text-xl);
 }
@@ -3292,10 +3292,6 @@ body:has(.contact-form) .contact-details::before {
 
   .cta-row .button {
     width: 100%;
-  }
-
-  .bio-timeline article {
-    grid-template-columns: 4rem minmax(0, 1fr);
   }
 
   .content-facts,
