@@ -1826,21 +1826,22 @@ body:has(.mission-panel) .page-hero__media img {
 
 .contact-grid {
   display: grid;
+  width: min(calc(var(--container) - (var(--space-20) * 2)), calc(100% - var(--space-10)));
   grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  gap: clamp(var(--space-10), 8vw, var(--space-20));
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
 .contact-details {
   overflow: hidden;
-  padding: var(--space-8);
+  padding: var(--space-6);
   border-radius: var(--radius-lg);
   background: var(--color-surface-subtle);
 }
 
 body:has(.contact-form) .contact-details::before {
   display: block;
-  height: calc(var(--space-20) * 3);
-  margin: calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-8);
+  height: calc((var(--space-20) * 2) + var(--space-10));
+  margin: calc(var(--space-6) * -1) calc(var(--space-6) * -1) var(--space-6);
   background-image: url("../images/client-contact.webp");
   background-position: center 34%;
   background-size: cover;
@@ -1848,7 +1849,7 @@ body:has(.contact-form) .contact-details::before {
 }
 
 .contact-details > p:not(.eyebrow) {
-  margin: var(--space-6) 0 var(--space-1);
+  margin: var(--space-4) 0 var(--space-1);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   text-transform: uppercase;
@@ -1864,8 +1865,8 @@ body:has(.contact-form) .contact-details::before {
 .contact-requisites {
   display: grid;
   gap: var(--space-2);
-  margin-block-start: var(--space-10);
-  padding-block-start: var(--space-6);
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-5);
   border-block-start: var(--line-thin) solid var(--color-border);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
@@ -1873,10 +1874,32 @@ body:has(.contact-form) .contact-details::before {
 
 .contact-form {
   align-content: start;
-  padding: clamp(var(--space-6), 5vw, var(--space-10));
+  padding: clamp(var(--space-5), 3vw, var(--space-8));
   border: var(--line-thin) solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
+}
+
+.contact-form[data-lead-form] {
+  gap: var(--space-2);
+  margin-block-start: 0;
+}
+
+.contact-form[data-lead-form] label:not(.checkbox) {
+  margin-block-start: 0;
+}
+
+.contact-form[data-lead-form] input:not([type="checkbox"]) {
+  min-height: calc(var(--control-md) - var(--space-1));
+}
+
+.contact-form[data-lead-form] textarea {
+  min-height: var(--space-16);
+  padding-block: var(--space-2);
+}
+
+.contact-form[data-lead-form] [data-error-for] {
+  min-height: 0;
 }
 
 .legal-header {
@@ -2573,7 +2596,7 @@ body:has(.contact-form) .contact-details::before {
 }
 
 .contact-form h2 {
-  margin-block-end: var(--space-5);
+  margin-block-end: var(--space-3);
   font-size: var(--text-3xl);
 }
 

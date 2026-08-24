@@ -446,6 +446,16 @@ test('contact layout uses bounded typography and safe wrapping', async () => {
   assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.7fr\)\s+minmax\(0,\s*1\.3fr\)/s);
 });
 
+test('contact section uses a compact bounded layout contract', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.contact-grid\s*\{[^}]*width:\s*min\(calc\(var\(--container\) - \(var\(--space-20\) \* 2\)\), calc\(100% - var\(--space-10\)\)\);[^}]*gap:\s*clamp\(var\(--space-6\), 4vw, var\(--space-10\)\);/s);
+  assert.match(css, /\.contact-details\s*\{[^}]*padding:\s*var\(--space-6\);/s);
+  assert.match(css, /body:has\(\.contact-form\) \.contact-details::before\s*\{[^}]*height:\s*calc\(\(var\(--space-20\) \* 2\) \+ var\(--space-10\)\);/s);
+  assert.match(css, /\.contact-form\s*\{[^}]*padding:\s*clamp\(var\(--space-5\), 3vw, var\(--space-8\)\);/s);
+  assert.match(css, /\.contact-form\[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\);[^}]*margin-block-start:\s*0;/s);
+  assert.match(css, /\.contact-form\[data-lead-form\] textarea\s*\{[^}]*min-height:\s*var\(--space-16\);/s);
+});
+
 test('mobile hero type uses the available content width', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.hero h1\s*\{[^}]*max-width:\s*none;[^}]*font-size:\s*clamp\(2\.5rem,\s*11vw,\s*3\.25rem\)/s);

@@ -40,7 +40,7 @@ test('contact section uses a compact bounded layout contract', async () => {
   assert.match(css, /\.contact-details\s*\{[^}]*padding:\s*var\(--space-6\);/s);
   assert.match(css, /body:has\(\.contact-form\) \.contact-details::before\s*\{[^}]*height:\s*calc\(\(var\(--space-20\) \* 2\) \+ var\(--space-10\)\);/s);
   assert.match(css, /\.contact-form\s*\{[^}]*padding:\s*clamp\(var\(--space-5\), 3vw, var\(--space-8\)\);/s);
-  assert.match(css, /\.contact-form\[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\);[^}]*margin-block-start:\s*var\(--space-4\);/s);
+  assert.match(css, /\.contact-form\[data-lead-form\]\s*\{[^}]*gap:\s*var\(--space-2\);[^}]*margin-block-start:\s*0;/s);
   assert.match(css, /\.contact-form\[data-lead-form\] textarea\s*\{[^}]*min-height:\s*var\(--space-16\);/s);
 });
 ```
@@ -100,7 +100,7 @@ body:has(.contact-form) .contact-details::before {
 
 .contact-form[data-lead-form] {
   gap: var(--space-2);
-  margin-block-start: var(--space-4);
+  margin-block-start: 0;
 }
 
 .contact-form[data-lead-form] label:not(.checkbox) {
