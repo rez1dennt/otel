@@ -2216,14 +2216,46 @@ body:has(.contact-form) .contact-details::before {
 }
 
 .social-link {
-  display: inline-flex;
+  position: relative;
+  display: inline-grid;
+  width: var(--control-md);
+  height: var(--control-md);
   min-height: var(--control-md);
-  align-items: center;
-  padding-inline: var(--space-4);
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
   border: var(--line-thin) solid var(--color-border);
   border-radius: var(--radius-pill);
   color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  font-size: 0;
+  line-height: 0;
+  transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+}
+
+.social-link::before {
+  width: var(--space-6);
+  height: var(--space-6);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: "";
+}
+
+.social-link:nth-child(1)::before {
+  background-image: url("../icons/social-telegram.svg");
+}
+
+.social-link:nth-child(2)::before {
+  background-image: url("../icons/social-max.svg");
+}
+
+.social-link:nth-child(3)::before {
+  background-image: url("../icons/social-dzen.svg");
+}
+
+.social-link:hover {
+  border-color: var(--color-accent);
+  background: var(--color-page);
 }
 
 .script-accent {

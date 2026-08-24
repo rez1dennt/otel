@@ -305,6 +305,21 @@ test('public contact details are consistent', async () => {
   }
 });
 
+test('social controls use logo-only Telegram, MAX and Dzen assets', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.social-link\s*\{[^}]*width:\s*var\(--control-md\);[^}]*height:\s*var\(--control-md\);[^}]*padding:\s*0;[^}]*font-size:\s*0;/s);
+  assert.match(css, /\.social-link::before\s*\{[^}]*width:\s*var\(--space-6\);[^}]*height:\s*var\(--space-6\);[^}]*background-position:\s*center;/s);
+  assert.match(css, /\.social-link:nth-child\(1\)::before\s*\{[^}]*url\("\.\.\/icons\/social-telegram\.svg"\)/s);
+  assert.match(css, /\.social-link:nth-child\(2\)::before\s*\{[^}]*url\("\.\.\/icons\/social-max\.svg"\)/s);
+  assert.match(css, /\.social-link:nth-child\(3\)::before\s*\{[^}]*url\("\.\.\/icons\/social-dzen\.svg"\)/s);
+
+  for (const name of ['telegram', 'max', 'dzen']) {
+    const svg = await readFile(new URL(`../assets/icons/social-${name}.svg`, import.meta.url), 'utf8');
+    assert.match(svg, /<svg/);
+    assert.doesNotMatch(svg, /<text/);
+  }
+});
+
 test('services present the four confirmed offers', async () => {
   const html = await readFile(new URL('../services.html', import.meta.url), 'utf8');
   const offers = [
