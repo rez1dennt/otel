@@ -456,7 +456,10 @@ test('card navigation cues expose desktop, keyboard and touch affordances', asyn
   assert.match(css, /\.service-card h3 a::after\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*content:\s*"";/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*2;/s);
   assert.match(css, /\.service-card:has\(h3 a:focus-visible\)\s*\{[^}]*box-shadow:\s*var\(--focus-ring\);/s);
-  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\]\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.insight-card\[href\]\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*border-color:\s*var\(--color-accent\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-card\[data-reveal\]:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*\}/s);
+  assert.doesNotMatch(css, /\.project-card\[data-reveal\]:hover\s*\{[^}]*(?:border-color|box-shadow):/s);
+  assert.match(css, /a:hover \.image-frame img\s*\{[^}]*scale:\s*1\.025;/s);
   assert.match(css, /:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):active\s*\{[^}]*translate:\s*0 var\(--space-1\);/s);
 });
 

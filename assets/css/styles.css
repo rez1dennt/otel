@@ -1529,8 +1529,12 @@ body:has(.mission-panel) .page-hero__media img {
   text-transform: uppercase;
 }
 
-:is(.service-card, .project-card, .insight-card[href]) {
+:is(.service-card, .insight-card[href]) {
   transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), translate var(--duration-fast) var(--ease-out);
+}
+
+.project-card {
+  transition: translate var(--duration-fast) var(--ease-out);
 }
 
 .project-listing > a {
@@ -2686,10 +2690,14 @@ body:has(.contact-form) .contact-details::before {
 }
 
 @media (hover: hover) {
-  :is(.service-card, .project-card, .insight-card[href]):hover {
+  :is(.service-card, .insight-card[href]):hover {
     translate: 0 calc(var(--space-1) * -1);
     border-color: var(--color-accent);
     box-shadow: var(--shadow-float);
+  }
+
+  .project-card[data-reveal]:hover {
+    translate: 0 calc(var(--space-1) * -1);
   }
 
   .project-listing > a:hover {

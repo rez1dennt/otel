@@ -38,11 +38,11 @@ assert.match(
 );
 assert.match(
   css,
-  /@media \(hover: hover\)[\s\S]*?\.project-card:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*\}/s,
+  /@media \(hover: hover\)[\s\S]*?\.project-card\[data-reveal\]:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*\}/s,
 );
 assert.doesNotMatch(
   css,
-  /\.project-card:hover\s*\{[^}]*(?:border-color|box-shadow):/s,
+  /\.project-card\[data-reveal\]:hover\s*\{[^}]*(?:border-color|box-shadow):/s,
 );
 assert.match(css, /a:hover \.image-frame img\s*\{[^}]*scale:\s*1\.025;/s);
 ```
@@ -55,7 +55,7 @@ Run:
 node --test --test-name-pattern="card navigation cues" tests\site.test.mjs
 ```
 
-Expected: FAIL because `.project-card` is still inside the shared framed hover selector and no separate `.project-card:hover` rule exists.
+Expected: FAIL because `.project-card` is still inside the shared framed hover selector and no separate, reveal-compatible `.project-card[data-reveal]:hover` rule exists.
 
 - [ ] **Step 3: Implement the minimal CSS split**
 
@@ -77,7 +77,7 @@ Change the shared transition and hover rules to:
     box-shadow: var(--shadow-float);
   }
 
-  .project-card:hover {
+  .project-card[data-reveal]:hover {
     translate: 0 calc(var(--space-1) * -1);
   }
 }
