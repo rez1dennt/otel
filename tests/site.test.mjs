@@ -260,6 +260,22 @@ test('article and case examples expose reusable field zones', async () => {
   assert.doesNotMatch(casePage, /\+\d+%|₽|руб(?:\.|лей)/i);
 });
 
+test('event and material templates expose distinct field contracts', async () => {
+  const event = await readFile(new URL('../poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/index.html', import.meta.url), 'utf8');
+  const material = await readFile(new URL('../poleznoe/materialy/chek-list-audita-prodazh/index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  for (const field of ['data-event-status', 'data-event-date', 'data-event-format', 'data-event-program']) assert.match(event, new RegExp(field));
+  assert.match(event, /Дата будет объявлена/);
+  assert.doesNotMatch(event, /"@type":"Event"/);
+
+  for (const field of ['data-material-type', 'data-material-access', 'data-material-format', 'data-material-contents']) assert.match(material, new RegExp(field));
+  assert.match(material, /data-modal-open/);
+  assert.doesNotMatch(material, /"@type":"Product"/);
+
+  for (const selector of ['content-status', 'content-facts', 'program-list', 'material-preview']) assert.match(css, new RegExp(`\\.${selector}`));
+});
+
 test('mobile detail grid can shrink below content intrinsic width', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.detail-hero__grid\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
