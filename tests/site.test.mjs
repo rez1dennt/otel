@@ -726,6 +726,14 @@ test('biography timeline reserves the intrinsic label width', async () => {
   assert.doesNotMatch(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.bio-timeline article\s*\{[^}]*grid-template-columns:\s*4rem minmax\(0, 1fr\);/s);
 });
 
+test('mobile Cookie banner uses compact touch-safe density', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.cookie-banner\s*\{[^}]*inset-inline:\s*var\(--space-2\);[^}]*width:\s*calc\(100% - var\(--space-4\)\);[^}]*gap:\s*var\(--space-3\);[^}]*padding:\s*var\(--space-4\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.cookie-banner__actions\s*\{[^}]*gap:\s*var\(--space-2\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.cookie-banner \.button\s*\{[^}]*min-height:\s*var\(--control-md\);[^}]*padding-inline:\s*var\(--space-4\);[^}]*font-size:\s*var\(--text-xs\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.cookie-options__inner\s*\{[^}]*gap:\s*var\(--space-3\);[^}]*padding-block-start:\s*var\(--space-3\);/s);
+});
+
 test('lead modal uses compact density on desktop and mobile', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);
