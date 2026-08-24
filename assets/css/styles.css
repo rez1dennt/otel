@@ -1379,6 +1379,7 @@ a:hover .image-frame img {
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   min-height: 42rem;
   margin-inline: var(--space-5);
+  margin-block-start: var(--space-5);
   padding: 0;
   overflow: hidden;
   border-radius: var(--radius-xl);
