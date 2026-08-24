@@ -3300,12 +3300,29 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .cookie-banner {
-    inset-inline: var(--space-3);
-    inset-block-end: var(--space-3);
+    inset-inline: var(--space-2);
+    inset-block-end: var(--space-2);
     grid-template-columns: 1fr;
-    width: calc(100% - var(--space-6));
-    max-height: calc(100vh - var(--space-6));
+    width: calc(100% - var(--space-4));
+    max-height: calc(100vh - var(--space-4));
+    gap: var(--space-3);
     overflow-y: auto;
+    padding: var(--space-4);
+  }
+
+  .cookie-banner__actions {
+    gap: var(--space-2);
+  }
+
+  .cookie-banner .button {
+    min-height: var(--control-md);
+    padding-inline: var(--space-4);
+    font-size: var(--text-xs);
+  }
+
+  .cookie-options__inner {
+    gap: var(--space-3);
+    padding-block-start: var(--space-3);
   }
 }
 
