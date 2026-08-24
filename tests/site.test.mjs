@@ -756,3 +756,18 @@ test('lead modal uses compact density on desktop and mobile', async () => {
   assert.match(css, /\.modal \[data-lead-form\] textarea\s*\{[^}]*min-height:\s*var\(--space-16\)/s);
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.modal__panel\s*\{[^}]*padding:\s*var\(--space-5\)/s);
 });
+
+test('card actions use centered bottom alignment and a twelve pixel content gap', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.project-card\s*\{[^}]*grid-template-rows:\s*auto 1fr;/s);
+  assert.match(css, /\.project-card__caption\s*\{[^}]*display:\s*flex;[^}]*height:\s*100%;[^}]*flex-direction:\s*column;/s);
+  assert.match(css, /\.project-card \.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;[^}]*justify-content:\s*center;[^}]*margin-block-end:\s*0;/s);
+  assert.match(css, /\.service-card__body > \.card-link-cue\s*\{[^}]*margin-block-start:\s*var\(--space-3\);/s);
+  assert.match(css, /\.insight-card p\s*\{[^}]*margin-block-end:\s*var\(--space-3\);/s);
+});
+
+test('detail hero media uses definite responsive block sizes', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.detail-hero__grid \.image-frame\s*\{[^}]*min-height:\s*0;[^}]*block-size:\s*34rem;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.detail-hero__grid \.image-frame\s*\{[^}]*min-height:\s*0;[^}]*block-size:\s*22rem;/s);
+});

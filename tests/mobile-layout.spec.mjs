@@ -106,3 +106,55 @@ test('mobile section and action geometry uses the compact tokens', async ({ page
   await page.goto('/poleznoe/');
   await expect(page.locator('.contact-panel')).toHaveCSS('min-height', '0px');
 });
+
+test('desktop card actions are centered, bottom-aligned and separated from copy', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/index.html');
+
+  const geometry = await page.evaluate(() => {
+    const gapAfterPrevious = (cue) => cue.getBoundingClientRect().top - cue.previousElementSibling.getBoundingClientRect().bottom;
+    const projectCues = [...document.querySelectorAll('.project-card .card-link-cue')];
+    const projectBottoms = projectCues.map((cue) => Math.round(cue.getBoundingClientRect().bottom));
+    const projectStyles = projectCues.map((cue) => {
+      const style = getComputedStyle(cue);
+      return { display: style.display, alignItems: style.alignItems, justifyContent: style.justifyContent };
+    });
+
+    return {
+      projectBottoms,
+      projectStyles,
+      serviceGaps: [...document.querySelectorAll('.service-card .card-link-cue')].map(gapAfterPrevious),
+      insightGaps: [...document.querySelectorAll('.insight-card .card-link-cue')].map(gapAfterPrevious)
+    };
+  });
+
+  expect(Math.max(...geometry.projectBottoms) - Math.min(...geometry.projectBottoms)).toBeLessThanOrEqual(1);
+  expect(geometry.projectStyles).toEqual(geometry.projectStyles.map(() => ({ display: 'flex', alignItems: 'center', justifyContent: 'center' })));
+  expect(Math.min(...geometry.serviceGaps)).toBeGreaterThanOrEqual(12);
+  expect(Math.min(...geometry.insightGaps)).toBeGreaterThanOrEqual(12);
+});
+
+test('detail hero images fill their complete frames at every target width', async ({ page }) => {
+  const detailRoutes = [
+    '/service.html',
+    '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+    '/poleznoe/materialy/chek-list-audita-prodazh/'
+  ];
+
+  for (const width of [1280, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of detailRoutes) {
+      await page.goto(route);
+      const media = await page.locator('.detail-hero__grid .image-frame').evaluate((frame) => {
+        const image = frame.querySelector('img');
+        return {
+          frameHeight: frame.getBoundingClientRect().height,
+          imageHeight: image.getBoundingClientRect().height,
+          objectFit: getComputedStyle(image).objectFit
+        };
+      });
+      expect(Math.abs(media.frameHeight - media.imageHeight), `${route} at ${width}px`).toBeLessThanOrEqual(1);
+      expect(media.objectFit).toBe('cover');
+    }
+  }
+});
