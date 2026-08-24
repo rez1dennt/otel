@@ -196,3 +196,20 @@ test('case listing cues stay centered and mobile contact art stays clear of copy
     expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewport);
   }
 });
+
+test('case listing descriptions stay separated from actions at every target width', async ({ page }) => {
+  for (const width of [1280, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/kejsy/');
+    const gaps = await page.locator('.project-listing .card-link-cue').evaluateAll((elements) => elements.map((cue) => (
+      cue.getBoundingClientRect().top - cue.previousElementSibling.getBoundingClientRect().bottom
+    )));
+    expect(gaps).toHaveLength(3);
+    expect(Math.min(...gaps), `${width}px action gap`).toBeGreaterThanOrEqual(12);
+    const overflow = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth
+    }));
+    expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.viewportWidth);
+  }
+});

@@ -780,3 +780,8 @@ test('case listing cues and mobile contact panels use their approved visual cont
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.contact-panel\s*\{[^}]*background:\s*var\(--gradient-contact-mobile\);/s);
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.contact-panel__art\s*\{[^}]*display:\s*none;/s);
 });
+
+test('case listing descriptions keep a twelve pixel action gap', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.project-listing p\s*\{[^}]*margin-block-end:\s*var\(--space-3\);/s);
+});

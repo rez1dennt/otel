@@ -1515,6 +1515,10 @@ body:has(.mission-panel) .page-hero__media img {
   font-size: var(--text-sm);
 }
 
+.project-listing p {
+  margin-block-end: var(--space-3);
+}
+
 .card-link-cue {
   display: inline-flex;
   width: max-content;
