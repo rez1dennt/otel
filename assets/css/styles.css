@@ -2441,6 +2441,14 @@ a:hover .image-frame img {
     max-width: none;
   }
 
+  .hero h1,
+  .section-heading h2,
+  .service-card h3 {
+    width: 100%;
+    text-align: center;
+    text-wrap: pretty;
+  }
+
   .grid--2,
   .grid--3,
   .grid--4 {
@@ -2638,6 +2646,8 @@ a:hover .image-frame img {
   .article-header h1 {
     max-width: none;
     font-size: clamp(2.25rem, 11vw, 3.5rem);
+    text-align: center;
+    text-wrap: pretty;
     overflow-wrap: anywhere;
   }
 
