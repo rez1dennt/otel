@@ -39,6 +39,8 @@ const cleanContentPages = {
   'kejsy/rost-pryamyh-prodazh/index.html': 'Рост прямых продаж'
 };
 
+const allPageFiles = [...Object.keys(pages), ...Object.keys(cleanContentPages)];
+
 const cleanPublicPaths = [
   '/poleznoe/',
   '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
@@ -410,6 +412,26 @@ test('shared navigation uses the client information architecture', async () => {
   }
 });
 
+test('shared header exposes Home in desktop and mobile navigation', async () => {
+  for (const file of allPageFiles) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    const header = html.match(/<header class="site-header">([\s\S]*?)<\/header>/)?.[1];
+    assert.ok(header, `${file}: site header`);
+    assert.equal((header.match(/href="\/index\.html">Главная<\/a>/g) || []).length, 2, `${file}: Home links`);
+    for (const label of ['Главная', 'Услуги', 'О проекте', 'Кейсы', 'Полезное', 'Контакты']) {
+      assert.match(header, new RegExp(`>${label}<`), `${file}: ${label}`);
+    }
+  }
+});
+
+test('shared footer contains only the public copyright label', async () => {
+  for (const file of allPageFiles) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /<span>© 2026 FORMA\.<\/span>/, file);
+    assert.doesNotMatch(html, /Рабочая версия сайта/, file);
+  }
+});
+
 test('shared navigation points to clean content archives', async () => {
   for (const file of [...Object.keys(pages), ...Object.keys(cleanContentPages)]) {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
@@ -630,6 +652,27 @@ test('shared layout uses sticky header, aligned footer controls and wider contac
   assert.match(css, /\.footer-bottom > div > :is\(a, button\)\s*\{[^}]*display:\s*inline-flex;[^}]*min-height:\s*var\(--space-8\);[^}]*align-items:\s*center;[^}]*line-height:\s*1;/s);
   assert.match(css, /\.contact-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 0\.8fr\) minmax\(0, 1\.2fr\);/s);
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.site-header\s*\{[^}]*width:\s*100%;[^}]*padding-inline:\s*var\(--space-5\);/s);
+});
+
+test('case template uses compact media and separated stage labels', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.case-grid aside a\s*\{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*var\(--space-8\) minmax\(0, 1fr\);[^}]*gap:\s*var\(--space-3\);/s);
+  assert.match(css, /\.case-hero \.image-frame\s*\{[^}]*width:\s*min\(100%, 64rem\);[^}]*min-height:\s*0;[^}]*aspect-ratio:\s*8 \/ 5;[^}]*margin-inline:\s*auto;/s);
+  assert.doesNotMatch(css, /\.detail-hero__grid \.image-frame,\s*\.case-hero \.image-frame\s*\{[^}]*min-height:\s*22rem;/s);
+});
+
+test('related materials use the compact centered grid contract', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.related-materials > div\s*\{[^}]*width:\s*min\(100%, 60rem\);[^}]*margin-inline:\s*auto;/s);
+  assert.match(css, /\.related-materials a\s*\{[^}]*min-height:\s*7rem;[^}]*padding:\s*var\(--space-5\);/s);
+});
+
+test('case FAQ uses the approved stage question', async () => {
+  for (const file of ['project.html', 'kejsy/rost-pryamyh-prodazh/index.html']) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(html, /Какие этапы работы показаны в кейсе\?/);
+    assert.doesNotMatch(html, /Что входит в структуру кейса\?/);
+  }
 });
 
 test('contact section uses a compact bounded layout contract', async () => {
