@@ -590,8 +590,8 @@ test('service cards expose one aligned minimalist action row', async () => {
   assert.match(css, /\.service-card__body\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\) auto auto;[^}]*align-content:\s*stretch;/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*width:\s*100%;[^}]*border-block-start:\s*var\(--line-thin\) solid var\(--color-border\)/s);
   assert.match(css, /\.service-card__actions > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
-  assert.match(css, /\.service-card__actions \.text-link\s*\{[^}]*width:\s*100%;[^}]*justify-content:\s*flex-start;[^}]*gap:\s*var\(--space-2\);[^}]*min-height:\s*var\(--control-md\)/s);
-  assert.match(css, /\.text-link::after\s*\{[^}]*content:\s*"\\2192";/s);
+  assert.match(css, /\.service-card__actions \.text-link\s*\{[^}]*width:\s*max-content;[^}]*min-height:\s*var\(--control-md\);[^}]*padding-inline:\s*var\(--space-4\);[^}]*border-radius:\s*var\(--radius-pill\);[^}]*background:\s*var\(--color-action\);[^}]*color:\s*var\(--color-on-action\);/s);
+  assert.match(css, /\.service-card__actions \.text-link::after\s*\{[^}]*content:\s*none;/s);
 });
 
 test('navigable cards expose persistent destination cues without duplicating buttons', async () => {
@@ -611,14 +611,15 @@ test('navigable cards expose persistent destination cues without duplicating but
 test('card navigation cues expose desktop, keyboard and touch affordances', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
 
-  assert.match(css, /\.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*gap:\s*var\(--space-2\);[^}]*font-weight:\s*650;/s);
-  assert.match(css, /\.card-link-cue::after\s*\{[^}]*content:\s*"\\2192";[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
+  assert.match(css, /\.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*min-height:\s*var\(--control-md\);[^}]*padding-inline:\s*var\(--space-4\);[^}]*border:\s*var\(--line-thin\) solid var\(--color-border\);[^}]*border-radius:\s*var\(--radius-pill\);/s);
+  assert.match(css, /\.card-link-cue::after\s*\{[^}]*content:\s*none;/s);
   assert.match(css, /\.service-card h3 a::after\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*content:\s*"";/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*2;/s);
   assert.match(css, /\.service-card:has\(h3 a:focus-visible\)\s*\{[^}]*box-shadow:\s*var\(--focus-ring\);/s);
   assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.insight-card\[href\]\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*border-color:\s*var\(--color-accent\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
   assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-card\[data-reveal\]:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*\}/s);
   assert.doesNotMatch(css, /\.project-card\[data-reveal\]:hover\s*\{[^}]*(?:border-color|box-shadow):/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):hover \.card-link-cue\s*\{[^}]*border-color:\s*var\(--color-action\);[^}]*background:\s*var\(--color-surface-subtle\);[^}]*color:\s*var\(--color-action\);/s);
   assert.match(css, /a:hover \.image-frame img\s*\{[^}]*scale:\s*1\.025;/s);
   assert.match(css, /:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):active\s*\{[^}]*translate:\s*0 var\(--space-1\);/s);
 });
@@ -628,7 +629,7 @@ test('wide case rows stay unboxed while material actions share one cue style', a
   const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
 
   assert.match(blog, /<a class="insight-card" href="\/poleznoe\/materialy\/chek-list-audita-prodazh\/"[^>]*>[\s\S]*?<span class="card-link-cue">Открыть материал<\/span>[\s\S]*?<\/a>/);
-  assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*margin-block-end:\s*0;[^}]*min-height:\s*var\(--space-8\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
+  assert.match(css, /\.insight-card \.card-link-cue\s*\{[^}]*min-height:\s*var\(--control-md\);[^}]*margin-block-end:\s*0;[^}]*padding-inline:\s*var\(--space-4\);[^}]*font-size:\s*var\(--text-xs\);[^}]*letter-spacing:\s*0\.1em;[^}]*text-transform:\s*uppercase;/s);
   assert.match(css, /\.project-listing > a\s*\{[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
   assert.doesNotMatch(css, /\.project-listing > a,\s*\.article-listing > a\s*\{[^}]*border:/s);
   assert.match(css, /@media \(hover: hover\)[\s\S]*?\.project-listing > a:hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);/s);
@@ -702,9 +703,19 @@ test('mobile headings keep twenty pixel gutters and expand beyond narrow desktop
   assert.match(css, /\.process-section\s*\{[^}]*margin-inline:\s*var\(--space-5\)/s);
 });
 
-test('mobile marketing headings are centered and avoid narrow balanced columns', async () => {
+test('mobile content headings share one left-aligned axis', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.hero h1,\s*\.section-heading h2,\s*\.service-card h3\s*\{[^}]*width:\s*100%;[^}]*text-align:\s*center;[^}]*text-wrap:\s*pretty;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?main :where\(h1, h2, h3\)\s*\{[^}]*width:\s*100%;[^}]*text-align:\s*start;[^}]*text-wrap:\s*pretty;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.page-hero__center\s*\{[^}]*justify-items:\s*start;[^}]*text-align:\s*start;/s);
+});
+
+test('mobile sections use the compact shared vertical rhythm', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.section,\s*\.section--compact\s*\{[^}]*padding-block:\s*var\(--space-12\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.case-hero\s*\{[^}]*padding-block:\s*var\(--space-10\) 0;/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.related-materials\s*\{[^}]*padding-block-end:\s*var\(--space-16\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.faq-panel,\s*\.contact-panel\s*\{[^}]*padding:\s*var\(--space-6\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.contact-panel\s*\{[^}]*min-height:\s*0;/s);
 });
 
 test('mobile final panels use a zero-minimum grid track', async () => {
