@@ -426,11 +426,38 @@ test('service cards expose one aligned minimalist action row', async () => {
   const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.equal((html.match(/class="service-card__actions"/g) || []).length, 4);
-  assert.match(css, /\.service-card__body\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\) auto;[^}]*align-content:\s*stretch;/s);
+  assert.match(css, /\.service-card__body\s*\{[^}]*grid-template-rows:\s*auto auto minmax\(0,\s*1fr\) auto auto;[^}]*align-content:\s*stretch;/s);
   assert.match(css, /\.service-card__actions\s*\{[^}]*width:\s*100%;[^}]*border-block-start:\s*var\(--line-thin\) solid var\(--color-border\)/s);
   assert.match(css, /\.service-card__actions > :not\(:first-child\)\s*\{[^}]*display:\s*none;/s);
   assert.match(css, /\.service-card__actions \.text-link\s*\{[^}]*width:\s*100%;[^}]*justify-content:\s*flex-start;[^}]*gap:\s*var\(--space-2\);[^}]*min-height:\s*var\(--control-md\)/s);
   assert.match(css, /\.text-link::after\s*\{[^}]*content:\s*"\\2192";/s);
+});
+
+test('navigable cards expose persistent destination cues without duplicating buttons', async () => {
+  const home = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const projects = await readFile(new URL('../projects.html', import.meta.url), 'utf8');
+  const blog = await readFile(new URL('../blog.html', import.meta.url), 'utf8');
+
+  assert.equal((home.match(/class="card-link-cue"/g) || []).length, 10);
+  assert.equal((home.match(/>Подробнее об услуге<\/span>/g) || []).length, 4);
+  assert.equal((home.match(/>Смотреть кейс<\/span>/g) || []).length, 3);
+  assert.equal((projects.match(/>Смотреть кейс<\/span>/g) || []).length, 3);
+  assert.equal((blog.match(/class="card-link-cue"/g) || []).length, 2);
+
+  const modalOnlyMaterial = blog.match(/<article class="insight-card"[\s\S]*?<\/article>/)?.[0] ?? '';
+  assert.doesNotMatch(modalOnlyMaterial, /card-link-cue/);
+});
+
+test('card navigation cues expose desktop, keyboard and touch affordances', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(css, /\.card-link-cue\s*\{[^}]*display:\s*inline-flex;[^}]*gap:\s*var\(--space-2\);[^}]*font-weight:\s*650;/s);
+  assert.match(css, /\.card-link-cue::after\s*\{[^}]*content:\s*"\\2192";[^}]*transition:\s*translate var\(--duration-fast\) var\(--ease-out\);/s);
+  assert.match(css, /\.service-card h3 a::after\s*\{[^}]*position:\s*absolute;[^}]*inset:\s*0;[^}]*content:\s*"";/s);
+  assert.match(css, /\.service-card__actions\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*2;/s);
+  assert.match(css, /\.service-card:has\(h3 a:focus-visible\)\s*\{[^}]*box-shadow:\s*var\(--focus-ring\);/s);
+  assert.match(css, /@media \(hover: hover\)[\s\S]*?:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):hover\s*\{[^}]*translate:\s*0 calc\(var\(--space-1\) \* -1\);[^}]*box-shadow:\s*var\(--shadow-float\);/s);
+  assert.match(css, /:is\(\.service-card, \.project-card, \.insight-card\[href\], \.project-listing > a\):active\s*\{[^}]*translate:\s*0 var\(--space-1\);/s);
 });
 
 test('client photography is used in personal brand sections', async () => {
