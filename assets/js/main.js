@@ -34,7 +34,7 @@ function setOverlayState(overlay, open, returnTarget = null) {
     const focusTarget = overlay.querySelector(FOCUSABLE);
     requestAnimationFrame(() => focusTarget?.focus());
   } else if (lastFocused instanceof HTMLElement) {
-    lastFocused.focus();
+    lastFocused.focus({ preventScroll: true });
     lastFocused = null;
   }
 }
