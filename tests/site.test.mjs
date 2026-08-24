@@ -708,6 +708,20 @@ test('mobile final panels use a zero-minimum grid track', async () => {
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.final-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s);
 });
 
+test('process summary keeps Russian copy in HTML instead of CSS', async () => {
+  const html = await readFile(new URL('../services.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(html, /data-process-summary="Прозрачно на каждом этапе — вы всегда знаете, что происходит и на каком мы этапе\."/);
+  assert.match(css, /\.process-list--six::after\s*\{[^}]*content:\s*attr\(data-process-summary\);/s);
+  assert.doesNotMatch(css, /content:\s*"Прозрачно на каждом этапе/);
+});
+
+test('biography timeline reserves the intrinsic label width', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.bio-timeline article\s*\{[^}]*grid-template-columns:\s*minmax\(var\(--space-20\), max-content\) minmax\(0, 1fr\);/s);
+  assert.doesNotMatch(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.bio-timeline article\s*\{[^}]*grid-template-columns:\s*4rem minmax\(0, 1fr\);/s);
+});
+
 test('lead modal uses compact density on desktop and mobile', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\[data-error-for\]:empty\s*\{\s*display:\s*none;/);
