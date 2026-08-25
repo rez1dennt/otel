@@ -802,3 +802,12 @@ test('mission quote keeps its visual tokens and aligns from the left', async () 
     /\.mission-panel \.script-accent\s*\{[^}]*max-width:\s*30ch;[^}]*margin:\s*var\(--space-4\) auto 0 0;[^}]*color:\s*var\(--color-accent\);[^}]*font-size:\s*var\(--text-2xl\);[^}]*line-height:\s*1\.45;/s
   );
 });
+
+test('mobile article typography uses the compact token scale', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.article-header h1\s*\{[^}]*font-size:\s*clamp\(var\(--text-2xl\), 10vw, var\(--text-display\)\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.article-lead\s*\{[^}]*font-size:\s*var\(--text-lg\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.article-body h2\s*\{[^}]*font-size:\s*var\(--text-2xl\);/s);
+  assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.article-body p\s*\{[^}]*font-size:\s*var\(--text-base\);/s);
+});

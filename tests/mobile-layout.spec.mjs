@@ -264,3 +264,34 @@ test('mission quote shares the content left axis at every target width', async (
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
   }
 });
+
+test('article typography stays compact on mobile and unchanged on desktop', async ({ page }) => {
+  const cases = [
+    { width: 320, h1: 32, lead: 18, h2: 28, body: 16 },
+    { width: 360, h1: 36, lead: 18, h2: 28, body: 16 },
+    { width: 1280, h1: 76.8, lead: 22, h2: 40.96, body: 18 }
+  ];
+
+  for (const expected of cases) {
+    await page.setViewportSize({ width: expected.width, height: 900 });
+    await page.goto('/poleznoe/stati/kak-provesti-audit-prodazh-otelya/');
+
+    const metrics = await page.evaluate(() => {
+      const size = (selector) => Number.parseFloat(getComputedStyle(document.querySelector(selector)).fontSize);
+      return {
+        h1: size('.article-header h1'),
+        lead: size('.article-lead'),
+        h2: size('.article-body h2'),
+        body: size('.article-body section > p:not(.eyebrow)'),
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth
+      };
+    });
+
+    expect.soft(metrics.h1, `${expected.width}px h1`).toBeCloseTo(expected.h1, 1);
+    expect.soft(metrics.lead, `${expected.width}px lead`).toBeCloseTo(expected.lead, 1);
+    expect.soft(metrics.h2, `${expected.width}px h2`).toBeCloseTo(expected.h2, 1);
+    expect.soft(metrics.body, `${expected.width}px body`).toBeCloseTo(expected.body, 1);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
+  }
+});

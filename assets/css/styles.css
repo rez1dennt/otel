@@ -3220,6 +3220,22 @@ body:has(.contact-form) .contact-details::before {
     overflow-wrap: anywhere;
   }
 
+  .article-header h1 {
+    font-size: clamp(var(--text-2xl), 10vw, var(--text-display));
+  }
+
+  .article-lead {
+    font-size: var(--text-lg);
+  }
+
+  .article-body h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .article-body p {
+    font-size: var(--text-base);
+  }
+
   .case-hero {
     padding-block: var(--space-10) 0;
   }
