@@ -1,0 +1,6 @@
+interface:
+  display_name: "Website Release QA"
+  short_description: "Финальная проверка сайта перед показом, commit и push"
+  default_prompt: "Use $website-release-qa to verify this website with fresh evidence before declaring it ready or pushing it."
+policy:
+  allow_implicit_invocation: true
