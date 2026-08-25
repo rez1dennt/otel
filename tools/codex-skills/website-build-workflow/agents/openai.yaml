@@ -1,0 +1,6 @@
+interface:
+  display_name: "Website Build Workflow"
+  short_description: "Создание HTML/CSS/JS-сайтов и WordPress-ready шаблонов"
+  default_prompt: "Use $website-build-workflow to build this website from the supplied materials and verify the result."
+policy:
+  allow_implicit_invocation: true
