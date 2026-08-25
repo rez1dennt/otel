@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   assertThemeArchiveValid,
-  normalizeArchiveEntry,
+  isPortableArchiveEntry,
   validateThemeSource
 } from '../scripts/validate-wordpress-theme.mjs';
 
@@ -46,6 +46,10 @@ test('functions register supports, menu and module assets', async () => {
   assert.match(functions, /forma-hotel-main/);
   assert.match(functions, /type="module"/);
   assert.match(functions, /forma_replace_demo_urls/);
+  assert.match(functions, /get_stylesheet_uri\(\)/);
+
+  const style = await readFile(path.join(THEME, 'style.css'), 'utf8');
+  assert.match(style, /\.admin-bar\s+\.site-header/);
 });
 
 test('fallback index uses shared shell and one main landmark', async () => {
@@ -93,8 +97,9 @@ test('archive validation rejects an absent candidate with a clear error', async 
   );
 });
 
-test('archive validation treats Windows ZIP separators as portable paths', () => {
-  assert.equal(normalizeArchiveEntry('forma-hotel\\style.css'), 'forma-hotel/style.css');
+test('archive validation rejects Windows-only ZIP separators', () => {
+  assert.equal(isPortableArchiveEntry('forma-hotel/style.css'), true);
+  assert.equal(isPortableArchiveEntry('forma-hotel\\style.css'), false);
 });
 
 test('build script keeps candidate and final archive as separate gated outputs', async () => {
@@ -103,8 +108,19 @@ test('build script keeps candidate and final archive as separate gated outputs',
   assert.match(buildScript, /\[switch\]\$SkipE2E/);
   assert.match(buildScript, /\.build/);
   assert.match(buildScript, /dist/);
-  assert.match(buildScript, /Compress-Archive/);
+  assert.match(buildScript, /ZipArchive/);
   assert.match(buildScript, /validate-wordpress-theme\.mjs/);
   assert.match(buildScript, /run-playground-e2e\.ps1/);
   assert.match(buildScript, /if \(\$SkipE2E\)/);
+});
+
+test('Playground Blueprint installs the candidate and uses current WP-CLI syntax', async () => {
+  const blueprint = JSON.parse(await readFile(path.resolve(TEST_DIR, '../playground/blueprint.json'), 'utf8'));
+  const installTheme = blueprint.steps.find((step) => step.step === 'installTheme');
+  const wpCli = blueprint.steps.find((step) => step.step === 'wp-cli');
+
+  assert.equal(installTheme.themeData.resource, 'bundled');
+  assert.equal(installTheme.themeData.path, '/theme.zip');
+  assert.equal(installTheme.options.activate, true);
+  assert.match(wpCli.command, /^wp\s/);
 });

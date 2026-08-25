@@ -9,3 +9,22 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: forma-hotel
 */
 
+/* Keep theme chrome clear of the fixed WordPress toolbar for logged-in editors. */
+.admin-bar .site-header,
+.admin-bar .mobile-menu {
+  inset-block-start: 32px;
+}
+
+@media screen and (max-width: 782px) {
+  .admin-bar .site-header,
+  .admin-bar .mobile-menu {
+    inset-block-start: 46px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .admin-bar .site-header,
+  .admin-bar .mobile-menu {
+    inset-block-start: 0;
+  }
+}

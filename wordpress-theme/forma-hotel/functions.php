@@ -44,6 +44,12 @@ function forma_hotel_enqueue_assets() {
         array(),
         forma_theme_asset_version( '/assets/css/styles.css' )
     );
+    wp_enqueue_style(
+        'forma-hotel-wordpress',
+        get_stylesheet_uri(),
+        array( 'forma-hotel-styles' ),
+        forma_theme_asset_version( '/style.css' )
+    );
     wp_enqueue_script(
         'forma-hotel-main',
         get_theme_file_uri( '/assets/js/main.js' ),
@@ -120,4 +126,3 @@ function forma_primary_menu_fallback( $args = array() ) {
         echo '<a href="' . esc_url( home_url( $path ) ) . '">' . esc_html( $label ) . '</a>';
     }
 }
-

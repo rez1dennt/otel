@@ -1,0 +1,30 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.1",
+    "wp": "latest"
+  },
+  "extraLibraries": ["wp-cli"],
+  "login": true,
+  "landingPage": "/",
+  "siteOptions": {
+    "blogname": "FORMA Hotel"
+  },
+  "steps": [
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "bundled",
+        "path": "/theme.zip"
+      },
+      "options": {
+        "activate": true
+      },
+      "ifAlreadyInstalled": "error"
+    },
+    {
+      "step": "wp-cli",
+      "command": "wp eval 'forma_hotel_bootstrap_site();'"
+    }
+  ]
+}

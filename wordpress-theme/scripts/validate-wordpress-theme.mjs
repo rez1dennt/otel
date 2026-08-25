@@ -36,6 +36,10 @@ export function normalizeArchiveEntry(entry) {
   return entry.replaceAll('\\', '/');
 }
 
+export function isPortableArchiveEntry(entry) {
+  return !entry.includes('\\') && !entry.startsWith('/');
+}
+
 async function pathExists(target) {
   try {
     await access(target);
@@ -137,7 +141,7 @@ function inspectZip(zipPath) {
     '    try { $styleText = $reader.ReadToEnd() } finally { $reader.Dispose() }',
     '  }',
     '  [ordered]@{',
-    "    entries = @($archive.Entries | ForEach-Object { $_.FullName.Replace('\\', '/') })",
+    '    entries = @($archive.Entries | ForEach-Object { $_.FullName })',
     '    styleCss = $styleText',
     '  } | ConvertTo-Json -Depth 4 -Compress',
     '} finally {',
@@ -178,16 +182,24 @@ export async function validateThemeArchive(themeRoot, zipPath) {
     return errors;
   }
 
-  const entries = archive.entries.map(normalizeArchiveEntry);
+  const rawEntries = archive.entries;
+  const entries = rawEntries.map(normalizeArchiveEntry);
   const archiveFiles = entries.filter((entry) => !entry.endsWith('/'));
   const archiveSet = new Set(archiveFiles);
   const sourceFiles = await listFiles(root);
   const expectedArchiveFiles = new Set(sourceFiles.map((file) => `${THEME_BUILD.slug}/${file}`));
 
-  for (const entry of entries) {
-    if (!entry.startsWith(`${THEME_BUILD.slug}/`)) {
+  rawEntries.forEach((entry, index) => {
+    if (!isPortableArchiveEntry(entry)) {
+      errors.push(`non-portable archive path: ${entry}`);
+    }
+    const normalized = entries[index];
+    if (!normalized.startsWith(`${THEME_BUILD.slug}/`)) {
       errors.push(`archive entry is outside ${THEME_BUILD.slug}/: ${entry}`);
     }
+  });
+
+  for (const entry of entries) {
     if (entry.startsWith(`${THEME_BUILD.slug}/${THEME_BUILD.slug}/`)) {
       errors.push(`archive contains nested theme directory: ${entry}`);
     }

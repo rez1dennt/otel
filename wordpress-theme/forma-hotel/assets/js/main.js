@@ -52,7 +52,7 @@ function closeMenu({ restoreFocus = true } = {}) {
   menu.setAttribute('aria-hidden', state.hidden);
   document.body.classList.remove('is-locked');
   if (activeOverlay === menu) activeOverlay = null;
-  if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus());
+  if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus({ preventScroll: true }));
 }
 
 function trapFocus(event) {

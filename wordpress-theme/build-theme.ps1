@@ -45,6 +45,44 @@ function Invoke-Checked {
     }
 }
 
+function New-PortableZip {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceDirectory,
+        [Parameter(Mandatory = $true)][string]$DestinationPath
+    )
+
+    Add-Type -AssemblyName System.IO.Compression
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $sourceRoot = [System.IO.Path]::GetFullPath($SourceDirectory).TrimEnd('\', '/')
+    $sourcePrefix = $sourceRoot + [System.IO.Path]::DirectorySeparatorChar
+    $archive = [System.IO.Compression.ZipFile]::Open(
+        $DestinationPath,
+        [System.IO.Compression.ZipArchiveMode]::Create
+    )
+
+    try {
+        Get-ChildItem -LiteralPath $sourceRoot -Recurse -File |
+            Sort-Object FullName |
+            ForEach-Object {
+                $relativePath = $_.FullName.Substring($sourcePrefix.Length).Replace('\', '/')
+                $entry = $archive.CreateEntry(
+                    $relativePath,
+                    [System.IO.Compression.CompressionLevel]::Optimal
+                )
+                $inputStream = [System.IO.File]::OpenRead($_.FullName)
+                $outputStream = $entry.Open()
+                try {
+                    $inputStream.CopyTo($outputStream)
+                } finally {
+                    $outputStream.Dispose()
+                    $inputStream.Dispose()
+                }
+            }
+    } finally {
+        $archive.Dispose()
+    }
+}
+
 Assert-PathWithin -Path $StageRoot -AllowedRoot $BuildRoot
 Assert-PathWithin -Path $CandidateZip -AllowedRoot $BuildRoot
 Assert-PathWithin -Path $FinalZip -AllowedRoot $DistRoot
@@ -76,10 +114,7 @@ try {
     }
 
     Write-Host 'Creating the candidate ZIP...'
-    Compress-Archive `
-        -LiteralPath (Join-Path $StageRoot 'forma-hotel') `
-        -DestinationPath $CandidateZip `
-        -CompressionLevel Optimal
+    New-PortableZip -SourceDirectory $StageRoot -DestinationPath $CandidateZip
 
     Invoke-Checked -FilePath $Node -Arguments @($Validator, $ThemeRoot, $CandidateZip)
 
