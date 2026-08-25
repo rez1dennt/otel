@@ -50,3 +50,26 @@ test('fallback index uses shared shell and one main landmark', async () => {
   assert.match(index, /have_posts\(\)/);
   assert.match(index, /get_footer\(\)/);
 });
+
+test('activation bootstrap is idempotent and never deletes client content', async () => {
+  const setup = await readFile(path.join(THEME, 'inc', 'theme-setup.php'), 'utf8');
+
+  for (const contract of [
+    /after_switch_theme/,
+    /get_page_by_path/,
+    /wp_insert_post/,
+    /_wp_page_template/,
+    /show_on_front/,
+    /page_on_front/,
+    /permalink_structure/,
+    /wp_create_nav_menu/,
+    /wp_update_nav_menu_item/,
+    /set_theme_mod/,
+    /flush_rewrite_rules/,
+    /forma_hotel_bootstrap_errors/,
+    /admin_notices/
+  ]) {
+    assert.match(setup, contract);
+  }
+  assert.doesNotMatch(setup, /wp_delete_post/);
+});
