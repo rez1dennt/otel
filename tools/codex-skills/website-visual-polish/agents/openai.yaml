@@ -1,0 +1,6 @@
+interface:
+  display_name: "Website Visual Polish"
+  short_description: "Адаптив, карточки, header и плавные интерфейсы без прыжков"
+  default_prompt: "Use $website-visual-polish to diagnose these visual problems, fix their root causes, and verify the target viewports."
+policy:
+  allow_implicit_invocation: true
