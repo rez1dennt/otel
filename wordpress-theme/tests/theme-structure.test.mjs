@@ -3,6 +3,11 @@ import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  assertThemeArchiveValid,
+  normalizeArchiveEntry,
+  validateThemeSource
+} from '../scripts/validate-wordpress-theme.mjs';
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const THEME = path.resolve(TEST_DIR, '../forma-hotel');
@@ -72,4 +77,34 @@ test('activation bootstrap is idempotent and never deletes client content', asyn
     assert.match(setup, contract);
   }
   assert.doesNotMatch(setup, /wp_delete_post/);
+});
+
+test('theme source is structurally complete and self-contained', async () => {
+  const errors = await validateThemeSource(THEME);
+  assert.deepEqual(errors, []);
+});
+
+test('archive validation rejects an absent candidate with a clear error', async () => {
+  const absentCandidate = path.resolve(TEST_DIR, '../.build/missing-forma-hotel.zip');
+
+  await assert.rejects(
+    assertThemeArchiveValid(THEME, absentCandidate),
+    /candidate ZIP not found/
+  );
+});
+
+test('archive validation treats Windows ZIP separators as portable paths', () => {
+  assert.equal(normalizeArchiveEntry('forma-hotel\\style.css'), 'forma-hotel/style.css');
+});
+
+test('build script keeps candidate and final archive as separate gated outputs', async () => {
+  const buildScript = await readFile(path.resolve(TEST_DIR, '../build-theme.ps1'), 'utf8');
+
+  assert.match(buildScript, /\[switch\]\$SkipE2E/);
+  assert.match(buildScript, /\.build/);
+  assert.match(buildScript, /dist/);
+  assert.match(buildScript, /Compress-Archive/);
+  assert.match(buildScript, /validate-wordpress-theme\.mjs/);
+  assert.match(buildScript, /run-playground-e2e\.ps1/);
+  assert.match(buildScript, /if \(\$SkipE2E\)/);
 });

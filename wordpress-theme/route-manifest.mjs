@@ -1,3 +1,8 @@
+export const THEME_BUILD = Object.freeze({
+  slug: 'forma-hotel',
+  version: '0.1.0'
+});
+
 export const ROUTES = [
   { id: 'home', source: 'index.html', output: 'front-page.php', path: '/', title: 'Главная', parentPath: null, menuOrder: 0, menuLabel: 'Главная', template: 'front-page.php' },
   { id: 'services', source: 'services.html', output: 'page-uslugi.php', path: '/uslugi/', title: 'Услуги', parentPath: null, menuOrder: 10, menuLabel: 'Услуги', template: 'page-uslugi.php' },
