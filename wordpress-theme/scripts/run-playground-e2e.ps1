@@ -81,6 +81,8 @@ $Arguments = @(
     "--blueprint=$BundleRoot",
     '--blueprint-may-read-adjacent-files',
     "--port=$Port",
+    '--php=8.1',
+    '--wp=latest',
     '--workers=1',
     '--verbosity=normal'
 )

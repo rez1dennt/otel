@@ -123,4 +123,7 @@ test('Playground Blueprint installs the candidate and uses current WP-CLI syntax
   assert.equal(installTheme.themeData.path, '/theme.zip');
   assert.equal(installTheme.options.activate, true);
   assert.match(wpCli.command, /^wp\s/);
+
+  const runner = await readFile(path.resolve(TEST_DIR, '../scripts/run-playground-e2e.ps1'), 'utf8');
+  assert.match(runner, /--php=8\.1/);
 });
