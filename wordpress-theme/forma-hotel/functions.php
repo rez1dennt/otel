@@ -31,6 +31,11 @@ if ( file_exists( $forma_case_bootstrap_file ) ) {
     require_once $forma_case_bootstrap_file;
 }
 
+$forma_lead_delivery_file = get_theme_file_path( '/inc/lead-delivery.php' );
+if ( file_exists( $forma_lead_delivery_file ) ) {
+    require_once $forma_lead_delivery_file;
+}
+
 function forma_hotel_setup() {
     add_theme_support( 'title-tag' );
     add_theme_support( 'post-thumbnails' );
@@ -72,6 +77,13 @@ function forma_hotel_enqueue_assets() {
         forma_theme_asset_version( '/assets/js/main.js' ),
         true
     );
+    if ( function_exists( 'forma_hotel_lead_config' ) ) {
+        wp_localize_script(
+            'forma-hotel-main',
+            'formaLeadConfig',
+            forma_hotel_lead_config()
+        );
+    }
 }
 add_action( 'wp_enqueue_scripts', 'forma_hotel_enqueue_assets' );
 
