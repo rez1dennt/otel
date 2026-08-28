@@ -129,6 +129,16 @@ test('design tokens preserve the reference palette', async () => {
   assert.doesNotMatch(css.toUpperCase(), /#000000|#FFFFFF/);
 });
 
+test('light action buttons use contrast-stable component tokens in every theme', async () => {
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(css, /--color-light-action:\s*var\(--ref-surface\);/);
+  assert.match(css, /--color-on-light-action:\s*var\(--ref-ink\);/);
+  assert.match(css, /--color-light-action-hover:\s*var\(--ref-line\);/);
+  assert.match(css, /\.button--light\s*\{[^}]*background:\s*var\(--color-light-action\);[^}]*color:\s*var\(--color-on-light-action\);/s);
+  assert.match(css, /\.button--light:hover\s*\{[^}]*background:\s*var\(--color-light-action-hover\);/s);
+});
+
 for (const file of Object.keys(pages)) {
   test(`${file} contains cookie controls`, async () => {
     const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');

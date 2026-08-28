@@ -88,6 +88,9 @@
   /* Component tokens */
   --button-radius: var(--radius-pill);
   --button-height: var(--control-lg);
+  --color-light-action: var(--ref-surface);
+  --color-on-light-action: var(--ref-ink);
+  --color-light-action-hover: var(--ref-line);
   --card-radius: var(--radius-lg);
   --field-radius: var(--radius-sm);
   --focus-ring: 0 0 0 0.1875rem var(--color-page), 0 0 0 0.375rem var(--color-focus);
@@ -315,12 +318,12 @@ p {
 }
 
 .button--light {
-  background: var(--color-surface);
-  color: var(--ref-ink);
+  background: var(--color-light-action);
+  color: var(--color-on-light-action);
 }
 
 .button--light:hover {
-  background: var(--ref-line);
+  background: var(--color-light-action-hover);
 }
 
 .text-link {
