@@ -919,7 +919,8 @@ a:hover .image-frame img {
 
 .project-grid {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr 0.8fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
   gap: var(--space-5);
 }
 
@@ -934,11 +935,7 @@ a:hover .image-frame img {
 }
 
 .project-card .image-frame {
-  aspect-ratio: 4 / 5;
-}
-
-.project-card--lead .image-frame {
-  aspect-ratio: 16 / 11;
+  aspect-ratio: 4 / 3;
 }
 
 .project-card__caption {
@@ -956,15 +953,18 @@ a:hover .image-frame img {
 
 .project-card .card-link-cue {
   display: inline-flex;
+  min-height: calc(var(--control-md) - var(--space-2));
   align-items: center;
   justify-content: center;
   margin-block-end: 0;
+  padding-inline: var(--space-4);
+  font-size: var(--text-xs);
 }
 
 .project-card h3 {
   margin-block-end: var(--space-3);
   overflow-wrap: anywhere;
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
 }
 
 .project-card p {
@@ -3170,15 +3170,17 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .project-grid {
-    grid-template-columns: 1.25fr 0.75fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .project-card:last-child {
+    width: calc((100% - var(--space-5)) / 2);
+    justify-self: center;
     grid-column: 1 / -1;
   }
 
   .project-card:last-child .image-frame {
-    aspect-ratio: 16 / 8;
+    aspect-ratio: 4 / 3;
   }
 
   .footer-grid {
@@ -3394,6 +3396,7 @@ body:has(.contact-form) .contact-details::before {
   }
 
   .project-card:last-child {
+    width: 100%;
     grid-column: auto;
   }
 
