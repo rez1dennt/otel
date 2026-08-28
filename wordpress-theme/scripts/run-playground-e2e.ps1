@@ -13,6 +13,7 @@ $ScriptRoot = [System.IO.Path]::GetFullPath($PSScriptRoot)
 $WordPressRoot = [System.IO.Path]::GetFullPath((Split-Path -Parent $ScriptRoot))
 $RepositoryRoot = [System.IO.Path]::GetFullPath((Split-Path -Parent $WordPressRoot))
 $BlueprintSource = Join-Path $WordPressRoot 'playground\blueprint.json'
+$MailInterceptorSource = Join-Path $WordPressRoot 'playground\lead-mail-test.php'
 $ResolvedThemeZip = [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $ThemeZip -ErrorAction Stop).Path)
 $TemporaryRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
 $BundleRoot = Join-Path $TemporaryRoot ("forma-hotel-playground-{0}" -f [System.Guid]::NewGuid().ToString('N'))
@@ -57,10 +58,14 @@ if (-not (Test-Path -LiteralPath $ResolvedThemeZip -PathType Leaf)) {
 if (-not (Test-Path -LiteralPath $BlueprintSource -PathType Leaf)) {
     throw "Playground Blueprint not found: $BlueprintSource"
 }
+if (-not (Test-Path -LiteralPath $MailInterceptorSource -PathType Leaf)) {
+    throw "Playground mail interceptor not found: $MailInterceptorSource"
+}
 
 Assert-TemporaryBundlePath -Path $BundleRoot
 New-Item -ItemType Directory -Path $BundleRoot -Force | Out-Null
 Copy-Item -LiteralPath $BlueprintSource -Destination (Join-Path $BundleRoot 'blueprint.json') -Force
+Copy-Item -LiteralPath $MailInterceptorSource -Destination (Join-Path $BundleRoot 'lead-mail-test.php') -Force
 Copy-Item -LiteralPath $ResolvedThemeZip -Destination (Join-Path $BundleRoot 'theme.zip') -Force
 
 $CliPackagePath = Join-Path $RepositoryRoot 'node_modules\@wp-playground\cli\package.json'

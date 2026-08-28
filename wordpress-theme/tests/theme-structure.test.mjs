@@ -249,13 +249,40 @@ test('Playground Blueprint installs the candidate and uses current WP-CLI syntax
   const blueprint = JSON.parse(await readFile(path.resolve(TEST_DIR, '../playground/blueprint.json'), 'utf8'));
   const installTheme = blueprint.steps.find((step) => step.step === 'installTheme');
   const wpCli = blueprint.steps.find((step) => step.step === 'wp-cli');
+  const config = blueprint.steps.find((step) => step.step === 'defineWpConfigConsts');
+  const mailInterceptor = blueprint.steps.find(
+    (step) => step.step === 'writeFile' && step.path === '/wordpress/wp-content/mu-plugins/forma-lead-mail-test.php'
+  );
 
   assert.equal(installTheme.themeData.resource, 'bundled');
   assert.equal(installTheme.themeData.path, '/theme.zip');
   assert.equal(installTheme.options.activate, true);
   assert.match(wpCli.command, /^wp\s/);
+  assert.equal(config.consts.FORMA_SMTP_USER, 'mailbox@example.test');
+  assert.equal(config.consts.FORMA_SMTP_PASSWORD, 'PLAYGROUND_ONLY_APP_PASSWORD');
+  assert.equal(config.consts.FORMA_LEAD_RECIPIENT, 'recipient@example.test');
+  assert.deepEqual(mailInterceptor.data, {
+    resource: 'bundled',
+    path: '/lead-mail-test.php'
+  });
+
+  const interceptor = await readFile(path.resolve(TEST_DIR, '../playground/lead-mail-test.php'), 'utf8');
+  assert.match(interceptor, /pre_wp_mail/);
+  assert.match(interceptor, /return true;/);
 
   const runner = await readFile(path.resolve(TEST_DIR, '../scripts/run-playground-e2e.ps1'), 'utf8');
   assert.match(runner, /--php=8\.1/);
   assert.match(runner, /--workers=6/);
+  assert.match(runner, /lead-mail-test\.php/);
+});
+
+test('deployment guide keeps SMTP credentials outside the theme', async () => {
+  const readme = await readFile(path.resolve(TEST_DIR, '../README.md'), 'utf8');
+
+  assert.match(readme, /FORMA_SMTP_USER/);
+  assert.match(readme, /FORMA_SMTP_PASSWORD/);
+  assert.match(readme, /FORMA_LEAD_RECIPIENT/);
+  assert.match(readme, /APP_PASSWORD_FROM_YANDEX/);
+  assert.match(readme, /wp-config\.php/);
+  assert.match(readme, /вне темы и Git/i);
 });

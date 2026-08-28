@@ -12,6 +12,22 @@
   },
   "steps": [
     {
+      "step": "defineWpConfigConsts",
+      "consts": {
+        "FORMA_SMTP_USER": "mailbox@example.test",
+        "FORMA_SMTP_PASSWORD": "PLAYGROUND_ONLY_APP_PASSWORD",
+        "FORMA_LEAD_RECIPIENT": "recipient@example.test"
+      }
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/forma-lead-mail-test.php",
+      "data": {
+        "resource": "bundled",
+        "path": "/lead-mail-test.php"
+      }
+    },
+    {
       "step": "installTheme",
       "themeData": {
         "resource": "bundled",
