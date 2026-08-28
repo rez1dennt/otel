@@ -1,0 +1,56 @@
+.forma-case-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.forma-case-field {
+  display: grid;
+  min-width: 0;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.forma-case-field:has(textarea),
+.forma-case-field:nth-last-child(-n + 2) {
+  grid-column: 1 / -1;
+}
+
+.forma-case-repeater {
+  display: grid;
+  gap: 1rem;
+}
+
+.forma-case-repeater [data-case-rows] {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.forma-case-repeater__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.75rem;
+  align-items: end;
+  padding: 1rem;
+  border: 0.0625rem solid #dcdcde;
+  border-radius: 0.5rem;
+  background: #f6f7f7;
+}
+
+.forma-case-repeater__row p {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+@media (max-width: 48rem) {
+  .forma-case-fields,
+  .forma-case-repeater__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .forma-case-field {
+    grid-column: auto;
+  }
+}
+

@@ -52,6 +52,46 @@ test('functions register supports, menu and module assets', async () => {
   assert.match(style, /\.admin-bar\s+\.site-header/);
 });
 
+test('native case editor registers a safe plugin-free content model', async () => {
+  const casePostTypePath = path.join(THEME, 'inc', 'case-post-type.php');
+  const adminScriptPath = path.join(THEME, 'assets', 'js', 'case-admin.js');
+  const adminStylePath = path.join(THEME, 'assets', 'css', 'case-admin.css');
+  await access(casePostTypePath);
+  await access(adminScriptPath);
+  await access(adminStylePath);
+
+  const functions = await readFile(path.join(THEME, 'functions.php'), 'utf8');
+  const source = await readFile(casePostTypePath, 'utf8');
+  const adminScript = await readFile(adminScriptPath, 'utf8');
+
+  assert.match(functions, /require_once\s+\$forma_case_post_type_file/);
+  assert.match(functions, /admin_enqueue_scripts/);
+  assert.match(source, /register_post_type\(\s*'forma_case'/);
+  assert.match(source, /'public'\s*=>\s*true/);
+  assert.match(source, /'has_archive'\s*=>\s*false/);
+  assert.match(source, /'show_in_rest'\s*=>\s*true/);
+  assert.match(source, /'rewrite'\s*=>\s*array\(\s*'slug'\s*=>\s*'kejsy'/s);
+  for (const support of ['title', 'excerpt', 'thumbnail', 'revisions', 'page-attributes']) {
+    assert.match(source, new RegExp(`'${support}'`));
+  }
+
+  for (const securityContract of [
+    /wp_nonce_field/,
+    /wp_verify_nonce/,
+    /current_user_can\(\s*'edit_post'/,
+    /DOING_AUTOSAVE/,
+    /sanitize_text_field/,
+    /wp_kses/
+  ]) assert.match(source, securityContract);
+
+  assert.match(source, /forma_case_steps/);
+  assert.match(source, /forma_case_metrics/);
+  assert.match(adminScript, /<button type="button"/);
+  assert.match(adminScript, /\.focus\(\)/);
+  assert.match(adminScript, /data-case-add/);
+  assert.match(adminScript, /data-case-remove/);
+});
+
 test('fallback index uses shared shell and one main landmark', async () => {
   const index = await readFile(path.join(THEME, 'index.php'), 'utf8');
   assert.match(index, /get_header\(\)/);

@@ -16,6 +16,11 @@ if ( file_exists( $forma_setup_file ) ) {
     require_once $forma_setup_file;
 }
 
+$forma_case_post_type_file = get_theme_file_path( '/inc/case-post-type.php' );
+if ( file_exists( $forma_case_post_type_file ) ) {
+    require_once $forma_case_post_type_file;
+}
+
 function forma_hotel_setup() {
     add_theme_support( 'title-tag' );
     add_theme_support( 'post-thumbnails' );
@@ -59,6 +64,30 @@ function forma_hotel_enqueue_assets() {
     );
 }
 add_action( 'wp_enqueue_scripts', 'forma_hotel_enqueue_assets' );
+
+function forma_hotel_enqueue_case_admin_assets( $hook_suffix ) {
+    if ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) ) {
+        return;
+    }
+    $screen = get_current_screen();
+    if ( ! $screen || 'forma_case' !== $screen->post_type ) {
+        return;
+    }
+    wp_enqueue_style(
+        'forma-hotel-case-admin',
+        get_theme_file_uri( '/assets/css/case-admin.css' ),
+        array(),
+        forma_theme_asset_version( '/assets/css/case-admin.css' )
+    );
+    wp_enqueue_script(
+        'forma-hotel-case-admin',
+        get_theme_file_uri( '/assets/js/case-admin.js' ),
+        array(),
+        forma_theme_asset_version( '/assets/js/case-admin.js' ),
+        true
+    );
+}
+add_action( 'admin_enqueue_scripts', 'forma_hotel_enqueue_case_admin_assets' );
 
 function forma_hotel_module_script_tag( $tag, $handle ) {
     if ( 'forma-hotel-main' !== $handle ) {
