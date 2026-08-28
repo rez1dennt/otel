@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build:content": "node scripts/generate-case-content.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:theme": "node --test wordpress-theme/tests/*.test.mjs",
     "test:theme:e2e": "node scripts/run-playwright.mjs --config=wordpress-theme/playwright.config.mjs",
-    "build:theme": "powershell -NoProfile -ExecutionPolicy Bypass -File wordpress-theme/build-theme.ps1",
+    "build:theme": "npm run build:content && powershell -NoProfile -ExecutionPolicy Bypass -File wordpress-theme/build-theme.ps1",
     "test:ui": "node scripts/run-playwright.mjs",
     "serve": "python -m http.server 4173"
   },

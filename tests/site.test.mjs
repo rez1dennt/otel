@@ -171,7 +171,10 @@ test('homepage contains the complete conversion path', async () => {
   assert.ok((html.match(/data-project-card/g) || []).length >= 3);
   assert.ok((html.match(/data-article-card/g) || []).length >= 3);
   assert.ok((html.match(/data-accordion-button/g) || []).length >= 4);
-  assert.match(html, /Пример структуры кейса/);
+  assert.match(html, /Перезагрузка загородного отеля/);
+  assert.match(html, /Пересборка маркетинга городского отеля/);
+  assert.match(html, /Перепозиционирование экоотеля/);
+  assert.doesNotMatch(html, /Пример структуры кейса|Шаблон будущего кейса/);
   assert.match(html, /Моя миссия/i);
 });
 
@@ -221,8 +224,9 @@ test('clean archives link every card to its matching template', async () => {
   ]) assert.match(useful, new RegExp(`href="${href}"`));
 
   assert.equal((useful.match(/class="insight-card"/g) || []).length, 3);
-  assert.match(cases, /href="\/kejsy\/rost-pryamyh-prodazh\/"/);
-  assert.ok((cases.match(/data-project-link/g) || []).length >= 3);
+  assert.match(cases, /href="\/kejsy\/perezagruzka-zagorodnogo-otelya\/"/);
+  assert.equal((cases.match(/data-project-link/g) || []).length, 7);
+  assert.doesNotMatch(cases, /href="\/kejsy\/rost-pryamyh-prodazh\/"/);
 });
 
 test('services page uses equal cards with one bottom-aligned action', async () => {

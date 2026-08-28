@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -55,4 +56,64 @@ test('case records contain complete editorial and image fields', async () => {
     assert.ok(item.conclusion.length >= 60, `${item.slug} conclusion`);
     assert.match(item.fallbackImage, /^assets\/images\/[a-z0-9-]+\.webp$/);
   }
+});
+
+test('case renderer builds semantic cards and one complete detail main', async () => {
+  const {
+    loadCases,
+    validateCases,
+    renderCaseCard,
+    renderCasePageMain
+  } = await loadCaseModule();
+  const [caseRecord] = validateCases(await loadCases(PROJECT_ROOT));
+
+  const card = renderCaseCard(caseRecord, 'featured');
+  assert.match(card, /class="project-card project-card--lead"/);
+  assert.match(card, /href="\/kejsy\/perezagruzka-zagorodnogo-otelya\/"/);
+  assert.match(card, /<h3>Перезагрузка загородного отеля<\/h3>/);
+  assert.match(card, /\+20%/);
+
+  const main = renderCasePageMain(caseRecord);
+  assert.equal((main.match(/<main\b/g) ?? []).length, 1);
+  assert.equal((main.match(/<h1\b/g) ?? []).length, 1);
+  assert.match(main, /id="context"/);
+  assert.match(main, /id="task"/);
+  assert.match(main, /id="work"/);
+  assert.match(main, /id="result"/);
+  assert.match(main, /data-modal-title="Обсудить задачу отеля"/);
+});
+
+test('static build publishes every case and replaces homepage and archive markers', async () => {
+  const { loadCases, validateCases } = await loadCaseModule();
+  const cases = validateCases(await loadCases(PROJECT_ROOT));
+  const home = await readFile(path.join(PROJECT_ROOT, 'index.html'), 'utf8');
+  const archive = await readFile(path.join(PROJECT_ROOT, 'kejsy', 'index.html'), 'utf8');
+
+  assert.match(home, /<!-- forma:featured-cases:start -->/);
+  assert.match(home, /<!-- forma:featured-cases:end -->/);
+  assert.match(archive, /<!-- forma:case-cards:start -->/);
+  assert.match(archive, /<!-- forma:case-cards:end -->/);
+
+  for (const item of cases) {
+    const html = await readFile(path.join(PROJECT_ROOT, 'kejsy', item.slug, 'index.html'), 'utf8');
+    assert.equal((html.match(/<main\b/g) ?? []).length, 1, item.slug);
+    assert.equal((html.match(/<h1\b/g) ?? []).length, 1, item.slug);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://example\\.ru/kejsy/${item.slug}/">`));
+    assert.match(html, /"@type":"Article"/);
+    assert.match(html, /"@type":"BreadcrumbList"/);
+    assert.doesNotMatch(html, /Пример структуры кейса|Шаблон будущего кейса/);
+    for (const step of item.steps) assert.match(html, new RegExp(step.title));
+    for (const metric of item.metrics) assert.match(html, new RegExp(metric.value.replace(/[+%→]/g, '\\$&')));
+  }
+});
+
+test('legacy demonstrational case is noindex and points to the real archive', async () => {
+  const html = await readFile(
+    path.join(PROJECT_ROOT, 'kejsy', 'rost-pryamyh-prodazh', 'index.html'),
+    'utf8'
+  );
+
+  assert.match(html, /<meta name="robots" content="noindex, follow">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/example\.ru\/kejsy\/">/);
+  assert.match(html, /href="\/kejsy\/"[^>]*>Смотреть реальные кейсы<\/a>/);
 });
