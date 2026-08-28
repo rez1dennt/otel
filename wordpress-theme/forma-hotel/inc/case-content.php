@@ -165,6 +165,9 @@ function forma_case_legacy_redirect() {
         wp_safe_redirect( home_url( '/kejsy/' ), 301 );
         exit;
     }
+    if ( '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/' === trailingslashit( $path ) ) {
+        wp_safe_redirect( home_url( '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/' ), 301 );
+        exit;
+    }
 }
 add_action( 'template_redirect', 'forma_case_legacy_redirect', 1 );
-

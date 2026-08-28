@@ -327,6 +327,10 @@ test('confirmed Kommersant event exposes exact source facts and schema', async (
     new URL('../poleznoe/materialy/chek-list-audita-prodazh/index.html', import.meta.url),
     'utf8'
   );
+  const article = await readFile(
+    new URL('../poleznoe/stati/kak-provesti-audit-prodazh-otelya/index.html', import.meta.url),
+    'utf8'
+  );
   const sitemap = await readFile(new URL('../sitemap.xml', import.meta.url), 'utf8');
   const eventPath = '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/';
   const officialUrl = 'https://events.kommersant.ru/event/industriya-gostepriimstva_26/';
@@ -349,7 +353,8 @@ test('confirmed Kommersant event exposes exact source facts and schema', async (
 
   assert.match(legacy, /<meta name="robots" content="noindex, follow">/);
   assert.match(legacy, new RegExp(`<link rel="canonical" href="https://example\\.ru${eventPath}">`));
-  for (const html of [home, useful, material]) assert.match(html, new RegExp(eventPath));
+  for (const html of [home, useful, material, article]) assert.match(html, new RegExp(eventPath));
+  assert.match(article, /<strong>Индустрия гостеприимства<\/strong>/);
   assert.match(sitemap, new RegExp(`https://example\\.ru${eventPath}`));
   assert.doesNotMatch(sitemap, /prodazhi-otelya-kak-sistema|rost-pryamyh-prodazh/);
 });

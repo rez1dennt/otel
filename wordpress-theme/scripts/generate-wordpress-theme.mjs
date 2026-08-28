@@ -127,7 +127,10 @@ function extractOgImagePath(html, sourcePath) {
 }
 
 export function renderPageTemplate(route, html) {
-  const main = transformMarkup(extractMain(html), route.source, ROUTES);
+  const main = injectDynamicThemeRegions(
+    route,
+    transformMarkup(extractMain(html), route.source, ROUTES)
+  );
   const meta = {
     description: extractMetaContent(html, 'name', 'description'),
     canonical_path: route.path,
@@ -135,6 +138,9 @@ export function renderPageTemplate(route, html) {
     og_image: extractOgImagePath(html, route.source)
   };
   const schema = extractSchemas(html);
+  const schemaLiteral = 'cases' === route.id
+    ? "function_exists( 'forma_case_archive_schema' ) ? array( forma_case_archive_schema() ) : array()"
+    : toPhpLiteral(schema);
 
   return `<?php
 /**
@@ -144,12 +150,41 @@ export function renderPageTemplate(route, html) {
  * Template Post Type: page
  */
 $GLOBALS['forma_page_meta'] = ${toPhpLiteral(meta)};
-$GLOBALS['forma_page_schema'] = ${toPhpLiteral(schema)};
+$GLOBALS['forma_page_schema'] = ${schemaLiteral};
 get_header();
 ?>
 ${main}
 <?php get_footer(); ?>
 `;
+}
+
+function replaceDynamicRegion( markup, marker, replacement ) {
+  const start = `<!-- forma:${marker}:start -->`;
+  const end = `<!-- forma:${marker}:end -->`;
+  const startIndex = markup.indexOf(start);
+  const endIndex = markup.indexOf(end);
+  if (startIndex < 0 || endIndex < startIndex) {
+    throw new Error(`Missing dynamic ${marker} region`);
+  }
+  return `${markup.slice(0, startIndex)}${replacement}${markup.slice(endIndex + end.length)}`;
+}
+
+export function injectDynamicThemeRegions(route, main) {
+  if ('home' === route.id) {
+    return replaceDynamicRegion(
+      main,
+      'featured-cases',
+      "<?php get_template_part( 'template-parts/home-cases' ); ?>"
+    );
+  }
+  if ('cases' === route.id) {
+    return replaceDynamicRegion(
+      main,
+      'case-cards',
+      "<?php get_template_part( 'template-parts/case-archive' ); ?>"
+    );
+  }
+  return main;
 }
 
 function renderContainerTemplate(route) {
@@ -223,6 +258,7 @@ async function hashFile(file) {
 async function sourceHashes(projectRoot) {
   const files = new Set(ROUTES.map((route) => path.join(projectRoot, route.source)));
   files.add(path.join(projectRoot, '404.html'));
+  files.add(path.join(projectRoot, 'content', 'cases.json'));
   for (const file of await listFiles(path.join(projectRoot, 'assets'))) files.add(file);
   const hashes = new Map();
   for (const file of [...files].sort()) hashes.set(file, await hashFile(file));
@@ -277,6 +313,11 @@ export async function generateThemeSnapshot({ projectRoot, themeRoot, routes = R
 
   await writeFile(path.join(themeRoot, 'inc', 'generated-routes.php'), renderGeneratedRoutesPhp(), 'utf8');
   generatedFiles.push('inc/generated-routes.php');
+
+  const dataDirectory = path.join(themeRoot, 'inc', 'data');
+  await mkdir(dataDirectory, { recursive: true });
+  await cp(path.join(projectRoot, 'content', 'cases.json'), path.join(dataDirectory, 'cases.json'), { force: true });
+  generatedFiles.push('inc/data/cases.json');
 
   await copyGeneratedAssets(projectRoot, themeRoot);
 

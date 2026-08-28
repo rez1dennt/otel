@@ -102,6 +102,12 @@ function updateMaterial(html) {
     .replace('<strong>Продажи отеля как система</strong>', '<strong>Индустрия гостеприимства</strong>');
 }
 
+function updateArticle(html) {
+  return html
+    .replaceAll(LEGACY_EVENT_PATH, EVENT_PATH)
+    .replace('<strong>Продажи отеля как система</strong>', '<strong>Индустрия гостеприимства</strong>');
+}
+
 function renderSitemap(html, caseSlugs) {
   const urls = [...html.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   const filtered = urls.filter((url) => {
@@ -131,10 +137,12 @@ export async function generateStaticEvent({ projectRoot }) {
   const homeFile = path.join(projectRoot, 'index.html');
   const usefulFile = path.join(projectRoot, 'poleznoe', 'index.html');
   const materialFile = path.join(projectRoot, 'poleznoe', 'materialy', 'chek-list-audita-prodazh', 'index.html');
+  const articleFile = path.join(projectRoot, 'poleznoe', 'stati', 'kak-provesti-audit-prodazh-otelya', 'index.html');
   const sitemapFile = path.join(projectRoot, 'sitemap.xml');
   await writeFile(homeFile, updateHome(await readFile(homeFile, 'utf8')), 'utf8');
   await writeFile(usefulFile, updateUseful(await readFile(usefulFile, 'utf8')), 'utf8');
   await writeFile(materialFile, updateMaterial(await readFile(materialFile, 'utf8')), 'utf8');
+  await writeFile(articleFile, updateArticle(await readFile(articleFile, 'utf8')), 'utf8');
   await writeFile(sitemapFile, renderSitemap(await readFile(sitemapFile, 'utf8'), cases.map((item) => item.slug)), 'utf8');
 
   return path.relative(projectRoot, outputFile).replaceAll('\\', '/');
@@ -153,4 +161,3 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     process.exitCode = 1;
   });
 }
-

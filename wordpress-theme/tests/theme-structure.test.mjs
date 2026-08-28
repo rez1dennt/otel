@@ -131,6 +131,8 @@ test('case seeds and public templates are dynamic and non-destructive', async ()
   assert.match(content, /forma_case_archive_schema/);
   assert.match(content, /template_redirect/);
   assert.match(content, /wp_safe_redirect\(\s*home_url\(\s*'\/kejsy\/'/);
+  assert.match(content, /\/poleznoe\/meropriyatiya\/prodazhi-otelya-kak-sistema\//);
+  assert.match(content, /\/poleznoe\/meropriyatiya\/industriya-gostepriimstva-2026\//);
 
   assert.match(single, /get_header\(\)/);
   assert.match(single, /forma_case_get_fields/);

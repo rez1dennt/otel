@@ -9,6 +9,7 @@ import { BOOTSTRAP_ROUTES, CONTAINER_ROUTES, ROUTES } from '../route-manifest.mj
 import {
   extractMain,
   generateThemeSnapshot,
+  injectDynamicThemeRegions,
   renderPageTemplate,
   transformMarkup
 } from '../scripts/generate-wordpress-theme.mjs';
@@ -17,11 +18,14 @@ const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(TEST_DIR, '../..');
 
 test('manifest covers every intended public WordPress route', () => {
-  assert.equal(ROUTES.length, 14);
+  assert.equal(ROUTES.length, 13);
   assert.equal(CONTAINER_ROUTES.length, 3);
   assert.equal(new Set(ROUTES.map((route) => route.path)).size, ROUTES.length);
   assert.equal(new Set(BOOTSTRAP_ROUTES.map((route) => route.path)).size, BOOTSTRAP_ROUTES.length);
   assert.ok(BOOTSTRAP_ROUTES.every((route) => route.path.startsWith('/') && route.path.endsWith('/')));
+  assert.ok(ROUTES.some((route) => route.path === '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/'));
+  assert.ok(!ROUTES.some((route) => route.path === '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/'));
+  assert.ok(!ROUTES.some((route) => route.path === '/kejsy/rost-pryamyh-prodazh/'));
 });
 
 test('extractMain returns one complete main landmark', () => {
@@ -40,8 +44,9 @@ test('transformMarkup resolves source-relative assets and clean internal routes'
 });
 
 test('renderPageTemplate wraps generated main with the shared shell', () => {
+  const route = ROUTES.find((item) => item.id === 'services');
   const output = renderPageTemplate(
-    ROUTES[0],
+    route,
     '<html><head><title>X</title></head><body><main id="main-content"><h1>X</h1></main></body></html>'
   );
   assert.match(output, /get_header\(\);/);
@@ -49,18 +54,41 @@ test('renderPageTemplate wraps generated main with the shared shell', () => {
   assert.match(output, /GENERATED FILE/);
 });
 
+test('dynamic case marker regions become WordPress template parts', async () => {
+  const homeRoute = ROUTES.find((route) => route.id === 'home');
+  const casesRoute = ROUTES.find((route) => route.id === 'cases');
+  const homeSource = await readFile(path.join(PROJECT_ROOT, homeRoute.source), 'utf8');
+  const casesSource = await readFile(path.join(PROJECT_ROOT, casesRoute.source), 'utf8');
+  const home = renderPageTemplate(homeRoute, homeSource);
+  const cases = renderPageTemplate(casesRoute, casesSource);
+
+  assert.match(home, /get_template_part\( 'template-parts\/home-cases' \)/);
+  assert.match(cases, /get_template_part\( 'template-parts\/case-archive' \)/);
+  assert.match(cases, /forma_case_archive_schema\(\)/);
+  assert.doesNotMatch(home, /forma:featured-cases/);
+  assert.doesNotMatch(cases, /forma:case-cards/);
+
+  assert.match(
+    injectDynamicThemeRegions(homeRoute, '<main><!-- forma:featured-cases:start --><div>Static</div><!-- forma:featured-cases:end --></main>'),
+    /template-parts\/home-cases/
+  );
+});
+
 test('generation preserves static sources and creates every snapshot template', async () => {
   const workspace = await mkdtemp(path.join(tmpdir(), 'forma-theme-generator-'));
   const themeRoot = path.join(workspace, 'forma-hotel');
   try {
     const result = await generateThemeSnapshot({ projectRoot: PROJECT_ROOT, themeRoot });
-    assert.equal(result.generatedFiles.length, ROUTES.length + CONTAINER_ROUTES.length + 2);
+    assert.equal(result.generatedFiles.length, ROUTES.length + CONTAINER_ROUTES.length + 3);
     for (const route of BOOTSTRAP_ROUTES) {
       assert.ok(result.generatedFiles.includes(route.output));
     }
     const home = await readFile(path.join(themeRoot, 'front-page.php'), 'utf8');
+    const copiedCases = await readFile(path.join(themeRoot, 'inc', 'data', 'cases.json'), 'utf8');
+    const sourceCases = await readFile(path.join(PROJECT_ROOT, 'content', 'cases.json'), 'utf8');
     assert.doesNotMatch(home, /href="[^"]+\.html/);
     assert.doesNotMatch(home, /(?:src|href)="\/?assets\//);
+    assert.equal(copiedCases, sourceCases);
     assert.ok(result.sourceHashes.size > ROUTES.length);
   } finally {
     await rm(workspace, { recursive: true, force: true });
