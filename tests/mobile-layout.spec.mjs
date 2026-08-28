@@ -11,10 +11,10 @@ const routes = [
   '/article.html',
   '/contacts.html',
   '/kejsy/',
-  '/kejsy/rost-pryamyh-prodazh/',
+  '/kejsy/perezagruzka-zagorodnogo-otelya/',
   '/poleznoe/',
   '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
-  '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+  '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/',
   '/poleznoe/materialy/chek-list-audita-prodazh/',
   '/privacy.html',
   '/consent.html',
@@ -137,7 +137,7 @@ test('desktop card actions are centered, bottom-aligned and separated from copy'
 test('detail hero images fill their complete frames at every target width', async ({ page }) => {
   const detailRoutes = [
     '/service.html',
-    '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+    '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/',
     '/poleznoe/materialy/chek-list-audita-prodazh/'
   ];
 
@@ -155,6 +155,36 @@ test('detail hero images fill their complete frames at every target width', asyn
       });
       expect(Math.abs(media.frameHeight - media.imageHeight), `${route} at ${width}px`).toBeLessThanOrEqual(1);
       expect(media.objectFit).toBe('cover');
+    }
+  }
+});
+
+test('case and event layouts keep text, media and actions inside mobile containers', async ({ page }) => {
+  for (const width of [360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of [
+      '/kejsy/perezagruzka-zagorodnogo-otelya/',
+      '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/'
+    ]) {
+      await page.goto(route);
+      const result = await page.evaluate(() => {
+        const target = document.querySelector('main .button');
+        const frame = document.querySelector('main .image-frame');
+        const image = frame?.querySelector('img');
+        return {
+          textAlign: getComputedStyle(document.querySelector('main h1')).textAlign,
+          buttonRight: target?.getBoundingClientRect().right ?? 0,
+          viewport: window.innerWidth,
+          frameHeight: frame?.getBoundingClientRect().height ?? 0,
+          imageHeight: image?.getBoundingClientRect().height ?? 0,
+          objectFit: image ? getComputedStyle(image).objectFit : ''
+        };
+      });
+
+      expect(result.textAlign, `${route}: h1`).toBe('start');
+      expect(result.buttonRight, `${route}: CTA`).toBeLessThanOrEqual(result.viewport - 19.5);
+      expect(Math.abs(result.frameHeight - result.imageHeight), `${route}: image fill`).toBeLessThanOrEqual(1);
+      expect(result.objectFit, `${route}: object fit`).toBe('cover');
     }
   }
 });
@@ -177,7 +207,7 @@ test('case listing cues stay centered and mobile contact art stays clear of copy
     };
   }));
 
-  expect(cues).toHaveLength(3);
+  expect(cues).toHaveLength(7);
   expect(cues.every((cue) => cue.display === 'inline-flex' && cue.alignItems === 'center' && cue.justifyContent === 'center')).toBe(true);
   expect(Math.max(...cues.map((cue) => cue.insetDifference))).toBeLessThanOrEqual(1);
 
@@ -204,7 +234,7 @@ test('case listing descriptions stay separated from actions at every target widt
     const gaps = await page.locator('.project-listing .card-link-cue').evaluateAll((elements) => elements.map((cue) => (
       cue.getBoundingClientRect().top - cue.previousElementSibling.getBoundingClientRect().bottom
     )));
-    expect(gaps).toHaveLength(3);
+    expect(gaps).toHaveLength(7);
     expect(Math.min(...gaps), `${width}px action gap`).toBeGreaterThanOrEqual(12);
     const overflow = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,

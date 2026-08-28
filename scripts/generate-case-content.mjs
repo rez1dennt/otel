@@ -232,8 +232,16 @@ export async function generateStaticCases({ projectRoot }) {
     '<div class="container project-listing">'
   );
   const featured = cases.filter((record) => record.featuredRank > 0);
-  const nextHome = replaceMarkedRegion(home, 'featured-cases', featured.map((record) => renderCaseCard(record, 'featured')).join(''));
-  const nextArchive = replaceMarkedRegion(archive, 'case-cards', cases.map((record) => renderCaseCard(record, 'archive')).join(''));
+  const nextHome = replaceMarkedRegion(
+    home,
+    'featured-cases',
+    `<div class="project-grid">${featured.map((record) => renderCaseCard(record, 'featured')).join('')}</div>`
+  );
+  const nextArchive = replaceMarkedRegion(
+    archive,
+    'case-cards',
+    `<div class="container project-listing">${cases.map((record) => renderCaseCard(record, 'archive')).join('')}</div>`
+  );
   const shell = extractSharedShell(nextArchive);
   const outputs = [];
 

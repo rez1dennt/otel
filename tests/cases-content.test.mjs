@@ -93,6 +93,8 @@ test('static build publishes every case and replaces homepage and archive marker
   assert.match(home, /<!-- forma:featured-cases:end -->/);
   assert.match(archive, /<!-- forma:case-cards:start -->/);
   assert.match(archive, /<!-- forma:case-cards:end -->/);
+  assert.match(home, /<!-- forma:featured-cases:start --><div class="project-grid">[\s\S]*?<\/div><!-- forma:featured-cases:end -->/);
+  assert.match(archive, /<!-- forma:case-cards:start --><div class="container project-listing">[\s\S]*?<\/div><!-- forma:case-cards:end -->/);
 
   for (const item of cases) {
     const html = await readFile(path.join(PROJECT_ROOT, 'kejsy', item.slug, 'index.html'), 'utf8');

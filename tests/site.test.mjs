@@ -34,9 +34,17 @@ const cleanContentPages = {
   'poleznoe/index.html': 'Полезное',
   'poleznoe/stati/kak-provesti-audit-prodazh-otelya/index.html': 'Как провести аудит продаж отеля',
   'poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/index.html': 'Продажи отеля как система',
+  'poleznoe/meropriyatiya/industriya-gostepriimstva-2026/index.html': 'Индустрия гостеприимства',
   'poleznoe/materialy/chek-list-audita-prodazh/index.html': 'Чек-лист аудита продаж отеля',
   'kejsy/index.html': 'Кейсы',
-  'kejsy/rost-pryamyh-prodazh/index.html': 'Рост прямых продаж'
+  'kejsy/rost-pryamyh-prodazh/index.html': 'Рост прямых продаж',
+  'kejsy/perezagruzka-zagorodnogo-otelya/index.html': 'Перезагрузка загородного отеля',
+  'kejsy/antikrizisnaya-strategiya-individualnoe-razmeshchenie-b2b/index.html': 'Антикризисная стратегия: индивидуальное размещение и B2B',
+  'kejsy/premialnyj-otel-novaya-riga-80-procentov-zagruzki/index.html': 'Как премиальный отель на Новой Риге вышел на загрузку 80%',
+  'kejsy/peresborka-marketinga-gorodskogo-otelya/index.html': 'Пересборка маркетинга городского отеля',
+  'kejsy/zapusk-novogo-korpusa-na-volge/index.html': 'Запуск нового корпуса загородного отеля на Волге',
+  'kejsy/peresborka-digital-i-kanalov-prodazh/index.html': 'Комплексная пересборка digital и каналов продаж городского отеля',
+  'kejsy/perepozicionirovanie-eko-otelya/index.html': 'Перепозиционирование экоотеля через аутентичность и контент'
 };
 
 const allPageFiles = [...Object.keys(pages), ...Object.keys(cleanContentPages)];
@@ -44,10 +52,16 @@ const allPageFiles = [...Object.keys(pages), ...Object.keys(cleanContentPages)];
 const cleanPublicPaths = [
   '/poleznoe/',
   '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
-  '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+  '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/',
   '/poleznoe/materialy/chek-list-audita-prodazh/',
   '/kejsy/',
-  '/kejsy/rost-pryamyh-prodazh/'
+  '/kejsy/perezagruzka-zagorodnogo-otelya/',
+  '/kejsy/antikrizisnaya-strategiya-individualnoe-razmeshchenie-b2b/',
+  '/kejsy/premialnyj-otel-novaya-riga-80-procentov-zagruzki/',
+  '/kejsy/peresborka-marketinga-gorodskogo-otelya/',
+  '/kejsy/zapusk-novogo-korpusa-na-volge/',
+  '/kejsy/peresborka-digital-i-kanalov-prodazh/',
+  '/kejsy/perepozicionirovanie-eko-otelya/'
 ];
 
 function projectFileFromReference(pageFile, reference) {
@@ -219,7 +233,7 @@ test('clean archives link every card to its matching template', async () => {
 
   for (const href of [
     '/poleznoe/stati/kak-provesti-audit-prodazh-otelya/',
-    '/poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/',
+    '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/',
     '/poleznoe/materialy/chek-list-audita-prodazh/'
   ]) assert.match(useful, new RegExp(`href="${href}"`));
 
@@ -296,6 +310,48 @@ test('event and material templates expose distinct field contracts', async () =>
   assert.doesNotMatch(material, /"@type":"Product"/);
 
   for (const selector of ['content-status', 'content-facts', 'program-list', 'material-preview']) assert.match(css, new RegExp(`\\.${selector}`));
+});
+
+test('confirmed Kommersant event exposes exact source facts and schema', async () => {
+  const event = await readFile(
+    new URL('../poleznoe/meropriyatiya/industriya-gostepriimstva-2026/index.html', import.meta.url),
+    'utf8'
+  );
+  const legacy = await readFile(
+    new URL('../poleznoe/meropriyatiya/prodazhi-otelya-kak-sistema/index.html', import.meta.url),
+    'utf8'
+  );
+  const home = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const useful = await readFile(new URL('../poleznoe/index.html', import.meta.url), 'utf8');
+  const material = await readFile(
+    new URL('../poleznoe/materialy/chek-list-audita-prodazh/index.html', import.meta.url),
+    'utf8'
+  );
+  const sitemap = await readFile(new URL('../sitemap.xml', import.meta.url), 'utf8');
+  const eventPath = '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/';
+  const officialUrl = 'https://events.kommersant.ru/event/industriya-gostepriimstva_26/';
+
+  for (const fact of [
+    'Виталина Погорила — спикер',
+    '10 сентября 2026 года',
+    'Бизнес-центр «Алкон III»',
+    'Ленинградский проспект, 34А',
+    'УК «ДОМ»',
+    'проект «Экоранчо»'
+  ]) assert.match(event, new RegExp(fact));
+
+  assert.match(event, new RegExp(officialUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(event, /rel="noopener noreferrer"/);
+  assert.match(event, /"@type":"Event"/);
+  assert.match(event, /"startDate":"2026-09-10"/);
+  assert.match(event, /"eventStatus":"https:\/\/schema\.org\/EventScheduled"/);
+  assert.doesNotMatch(event, /"endDate"|"offers"|"price"/);
+
+  assert.match(legacy, /<meta name="robots" content="noindex, follow">/);
+  assert.match(legacy, new RegExp(`<link rel="canonical" href="https://example\\.ru${eventPath}">`));
+  for (const html of [home, useful, material]) assert.match(html, new RegExp(eventPath));
+  assert.match(sitemap, new RegExp(`https://example\\.ru${eventPath}`));
+  assert.doesNotMatch(sitemap, /prodazhi-otelya-kak-sistema|rost-pryamyh-prodazh/);
 });
 
 test('mobile detail grid can shrink below content intrinsic width', async () => {
