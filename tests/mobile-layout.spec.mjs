@@ -159,6 +159,49 @@ test('detail hero images fill their complete frames at every target width', asyn
   }
 });
 
+test('long event title stays inside its hero column at every target width', async ({ page }) => {
+  const eventRoute = '/poleznoe/meropriyatiya/industriya-gostepriimstva-2026/';
+
+  for (const width of [1280, 1024, 768, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(eventRoute);
+
+    const geometry = await page.evaluate(() => {
+      const heading = document.querySelector('.detail-hero h1');
+      const copy = document.querySelector('.detail-hero__grid > div:first-child');
+      const media = document.querySelector('.detail-hero__grid .image-frame');
+      const headingBox = heading.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      const mediaBox = media.getBoundingClientRect();
+
+      return {
+        clientWidth: heading.clientWidth,
+        scrollWidth: heading.scrollWidth,
+        headingRight: headingBox.right,
+        copyRight: copyBox.right,
+        mediaLeft: mediaBox.left,
+        pageScrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+        textAlign: getComputedStyle(heading).textAlign,
+        fontSize: getComputedStyle(heading).fontSize
+      };
+    });
+
+    expect(geometry.scrollWidth, `${width}px: title intrinsic width`).toBeLessThanOrEqual(geometry.clientWidth + 1);
+    expect(geometry.pageScrollWidth, `${width}px: page overflow`).toBeLessThanOrEqual(geometry.viewportWidth);
+    expect(geometry.textAlign, `${width}px: alignment`).toBe('start');
+
+    if (width >= 768) {
+      expect(geometry.headingRight, `${width}px: copy boundary`).toBeLessThanOrEqual(geometry.copyRight + 1);
+      expect(geometry.headingRight, `${width}px: image boundary`).toBeLessThanOrEqual(geometry.mediaLeft);
+    } else {
+      await page.goto('/poleznoe/materialy/chek-list-audita-prodazh/');
+      const sharedMobileSize = await page.locator('.detail-hero h1').evaluate((heading) => getComputedStyle(heading).fontSize);
+      expect(geometry.fontSize, `${width}px: shared mobile scale`).toBe(sharedMobileSize);
+    }
+  }
+});
+
 test('case and event layouts keep text, media and actions inside mobile containers', async ({ page }) => {
   for (const width of [360, 320]) {
     await page.setViewportSize({ width, height: 900 });

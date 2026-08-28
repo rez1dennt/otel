@@ -845,6 +845,16 @@ test('detail hero media uses definite responsive block sizes', async () => {
   assert.match(css, /@media \(max-width: 47\.9375rem\)[\s\S]*?\.detail-hero__grid \.image-frame\s*\{[^}]*min-height:\s*0;[^}]*block-size:\s*22rem;/s);
 });
 
+test('long event title uses a scoped fit modifier', async () => {
+  const event = await readFile(new URL('../poleznoe/meropriyatiya/industriya-gostepriimstva-2026/index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
+
+  assert.match(event, /class="detail-hero detail-hero--long-title"/);
+  assert.match(css, /--detail-long-title-size:\s*clamp\(/);
+  assert.match(css, /\.detail-hero--long-title h1\s*\{[^}]*font-size:\s*var\(--detail-long-title-size\);[^}]*text-wrap:\s*balance;/s);
+  assert.doesNotMatch(css, /html,\s*body\s*\{[^}]*overflow-x:\s*hidden;/s);
+});
+
 test('case listing cues and mobile contact panels use their approved visual contracts', async () => {
   const css = await readFile(new URL('../assets/css/styles.css', import.meta.url), 'utf8');
 
