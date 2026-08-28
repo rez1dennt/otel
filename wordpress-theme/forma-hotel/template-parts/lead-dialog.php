@@ -9,6 +9,7 @@
         <h2 id="lead-dialog-title" data-modal-title-target>Оставить заявку</h2>
         <p id="lead-dialog-description" data-modal-description-target>Коротко расскажите о задаче. Мы свяжемся с вами и предложим следующий шаг.</p>
         <form id="modal-lead-form" data-lead-form novalidate>
+            <div class="form-trap" aria-hidden="true"><label for="lead-website">Не заполняйте это поле</label><input id="lead-website" name="website" tabindex="-1" autocomplete="off"></div>
             <label for="lead-name">Имя</label><input id="lead-name" name="name" autocomplete="name"><span data-error-for="name"></span>
             <label for="lead-phone">Телефон</label><input id="lead-phone" name="phone" type="tel" autocomplete="tel"><span data-error-for="phone"></span>
             <label for="lead-email">Электронная почта</label><input id="lead-email" name="email" type="email" autocomplete="email"><span data-error-for="email"></span>
@@ -19,4 +20,3 @@
         </form>
     </div>
 </div>
-

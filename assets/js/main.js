@@ -1,5 +1,6 @@
 import {
   getDisclosureState,
+  getLeadTransport,
   getMenuState,
   normalizeCookiePreferences,
   serializeCookiePreferences,
@@ -174,10 +175,12 @@ function setFieldError(form, fieldName, message) {
 }
 
 function setupForms() {
+  const transport = getLeadTransport(window.formaLeadConfig);
+
   document.querySelectorAll('[data-lead-form]').forEach((form, index) => {
     if (!form.id) form.id = `lead-form-${index + 1}`;
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const data = new FormData(form);
       const errors = validateLead({
@@ -199,9 +202,38 @@ function setupForms() {
       }
 
       const submit = form.querySelector('[type="submit"]');
+      if (!transport) {
+        if (status) status.textContent = 'Демонстрационная заявка заполнена. Отправка доступна в WordPress-версии сайта.';
+        return;
+      }
+
+      const initialLabel = submit?.textContent || 'Отправить заявку';
+      data.set('action', transport.action);
+      data.set('nonce', transport.nonce);
+      data.set('page_url', window.location.href);
+      submit?.setAttribute('disabled', '');
       submit?.setAttribute('aria-busy', 'true');
-      if (status) status.textContent = 'Демонстрационная заявка заполнена. Отправка будет подключена после выбора сервиса.';
-      window.setTimeout(() => submit?.removeAttribute('aria-busy'), 450);
+      if (submit) submit.textContent = transport.messages.loading;
+      if (status) status.textContent = transport.messages.loading;
+
+      try {
+        const response = await fetch(transport.ajaxUrl, {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: data
+        });
+        const result = await response.json();
+        if (!response.ok || result?.success !== true) throw new Error('Lead delivery failed');
+
+        form.reset();
+        if (status) status.textContent = result?.data?.message || transport.messages.success;
+      } catch {
+        if (status) status.textContent = transport.messages.error;
+      } finally {
+        submit?.removeAttribute('disabled');
+        submit?.removeAttribute('aria-busy');
+        if (submit) submit.textContent = initialLabel;
+      }
     });
   });
 }

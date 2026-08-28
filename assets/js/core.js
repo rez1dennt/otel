@@ -14,6 +14,28 @@ export function validateLead(values = {}) {
   return errors;
 }
 
+export function getLeadTransport(value) {
+  if (!value || typeof value !== 'object') return null;
+
+  const ajaxUrl = String(value.ajaxUrl ?? '').trim();
+  const action = String(value.action ?? '').trim();
+  const nonce = String(value.nonce ?? '').trim();
+  const messages = value.messages;
+  if (!ajaxUrl || !action || !nonce || !messages || typeof messages !== 'object') return null;
+
+  const loading = String(messages.loading ?? '').trim();
+  const success = String(messages.success ?? '').trim();
+  const error = String(messages.error ?? '').trim();
+  if (!loading || !success || !error) return null;
+
+  return {
+    ajaxUrl,
+    action,
+    nonce,
+    messages: { loading, success, error }
+  };
+}
+
 export function normalizeCookiePreferences(value = {}) {
   return {
     necessary: true,

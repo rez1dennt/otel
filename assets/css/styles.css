@@ -1370,6 +1370,18 @@ a:hover .image-frame img {
   border: 0;
 }
 
+.form-trap {
+  position: absolute;
+  width: var(--line-thin);
+  height: var(--line-thin);
+  padding: 0;
+  margin: calc(var(--line-thin) * -1);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 [hidden] {
   display: none !important;
 }

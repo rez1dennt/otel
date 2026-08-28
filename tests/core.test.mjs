@@ -2,11 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   getDisclosureState,
+  getLeadTransport,
   getMenuState,
   normalizeCookiePreferences,
   serializeCookiePreferences,
   validateLead
 } from '../assets/js/core.js';
+
+test('lead transport accepts only complete server-provided configuration', () => {
+  const config = {
+    ajaxUrl: 'https://example.test/wp-admin/admin-ajax.php',
+    action: 'forma_submit_lead',
+    nonce: 'test-nonce',
+    messages: {
+      loading: 'Отправляем заявку…',
+      success: 'Заявка отправлена.',
+      error: 'Не удалось отправить заявку.'
+    }
+  };
+
+  assert.deepEqual(getLeadTransport(config), config);
+  assert.equal(getLeadTransport({ ...config, nonce: '' }), null);
+  assert.equal(getLeadTransport({ ...config, messages: {} }), null);
+  assert.equal(getLeadTransport(undefined), null);
+});
 
 test('valid lead has no errors', () => {
   assert.deepEqual(validateLead({
