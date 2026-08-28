@@ -35,6 +35,20 @@ function forma_hotel_route_depth( $route ) {
 }
 
 function forma_hotel_bootstrap_site() {
+    $lock_value   = (string) microtime( true );
+    $existing_lock = (float) get_option( 'forma_hotel_bootstrap_lock', 0 );
+
+    if ( $existing_lock > microtime( true ) - 120 ) {
+        return;
+    }
+    if ( $existing_lock ) {
+        delete_option( 'forma_hotel_bootstrap_lock' );
+    }
+    if ( ! add_option( 'forma_hotel_bootstrap_lock', $lock_value, '', false ) ) {
+        return;
+    }
+
+    try {
     $routes = forma_hotel_routes();
     $errors = array();
     $pages  = array();
@@ -194,6 +208,11 @@ function forma_hotel_bootstrap_site() {
         update_option( 'forma_hotel_bootstrap_errors', $errors );
     }
     flush_rewrite_rules( false );
+    } finally {
+        if ( $lock_value === (string) get_option( 'forma_hotel_bootstrap_lock', '' ) ) {
+            delete_option( 'forma_hotel_bootstrap_lock' );
+        }
+    }
 }
 add_action( 'after_switch_theme', 'forma_hotel_bootstrap_site' );
 

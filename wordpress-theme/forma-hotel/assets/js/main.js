@@ -20,13 +20,28 @@ const FOCUSABLE = [
 
 let activeOverlay = null;
 let lastFocused = null;
+let lockedScrollY = null;
+
+function setDocumentScrollLocked(locked) {
+  if (locked) {
+    if (lockedScrollY === null) lockedScrollY = window.scrollY;
+    document.body.classList.add('is-locked');
+    return;
+  }
+
+  document.body.classList.remove('is-locked');
+  if (lockedScrollY === null) return;
+  const restoreScrollY = lockedScrollY;
+  lockedScrollY = null;
+  window.scrollTo({ top: restoreScrollY, left: window.scrollX, behavior: 'instant' });
+}
 
 function setOverlayState(overlay, open, returnTarget = null) {
   if (!overlay) return;
 
   overlay.classList.toggle('is-open', open);
   overlay.setAttribute('aria-hidden', String(!open));
-  document.body.classList.toggle('is-locked', open);
+  setDocumentScrollLocked(open);
   activeOverlay = open ? overlay : null;
 
   if (open) {
@@ -50,7 +65,7 @@ function closeMenu({ restoreFocus = true } = {}) {
   toggle.setAttribute('aria-label', state.label);
   menu.classList.toggle('is-open', Boolean(state.className));
   menu.setAttribute('aria-hidden', state.hidden);
-  document.body.classList.remove('is-locked');
+  setDocumentScrollLocked(false);
   if (activeOverlay === menu) activeOverlay = null;
   if (restoreFocus && wasOpen) requestAnimationFrame(() => toggle.focus({ preventScroll: true }));
 }
@@ -128,7 +143,7 @@ function setupMenu() {
     toggle.setAttribute('aria-label', state.label);
     menu.classList.toggle('is-open', Boolean(state.className));
     menu.setAttribute('aria-hidden', state.hidden);
-    document.body.classList.add('is-locked');
+    setDocumentScrollLocked(true);
     activeOverlay = menu;
     requestAnimationFrame(() => menu.querySelector(FOCUSABLE)?.focus());
   });

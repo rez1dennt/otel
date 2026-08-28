@@ -167,6 +167,8 @@ test('activation bootstrap is idempotent and never deletes client content', asyn
     /wp_update_nav_menu_item/,
     /set_theme_mod/,
     /flush_rewrite_rules/,
+    /add_option\(\s*'forma_hotel_bootstrap_lock'/,
+    /delete_option\(\s*'forma_hotel_bootstrap_lock'/,
     /forma_hotel_bootstrap_errors/,
     /admin_notices/
   ]) {
@@ -218,4 +220,5 @@ test('Playground Blueprint installs the candidate and uses current WP-CLI syntax
 
   const runner = await readFile(path.resolve(TEST_DIR, '../scripts/run-playground-e2e.ps1'), 'utf8');
   assert.match(runner, /--php=8\.1/);
+  assert.match(runner, /--workers=6/);
 });

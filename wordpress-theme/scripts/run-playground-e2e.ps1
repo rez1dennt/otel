@@ -83,7 +83,7 @@ $Arguments = @(
     "--port=$Port",
     '--php=8.1',
     '--wp=latest',
-    '--workers=1',
+    '--workers=6',
     '--verbosity=normal'
 )
 $ArgumentLine = ($Arguments | ForEach-Object { Quote-NativeArgument -Value $_ }) -join ' '

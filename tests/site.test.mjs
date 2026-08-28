@@ -461,11 +461,14 @@ test('opening a modal from the mobile menu closes and synchronizes the menu', as
 test('closing a modal restores focus without moving the page', async () => {
   const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   assert.match(main, /lastFocused\.focus\(\{\s*preventScroll:\s*true\s*\}\)/);
+  assert.match(main, /setDocumentScrollLocked\(false\)/);
+  assert.match(main, /behavior:\s*'instant'/);
 });
 
 test('closing the mobile menu restores toggle focus without moving the page', async () => {
   const main = await readFile(new URL('../assets/js/main.js', import.meta.url), 'utf8');
   assert.match(main, /toggle\.focus\(\{\s*preventScroll:\s*true\s*\}\)/);
+  assert.match(main, /setDocumentScrollLocked\(false\)/);
 });
 
 test('shared navigation marks the current page at runtime', async () => {
