@@ -553,6 +553,29 @@ test('social controls use logo-only Telegram, MAX and Dzen assets', async () => 
     assert.match(svg, /<svg/);
     assert.doesNotMatch(svg, /<text/);
   }
+
+  for (const file of allPageFiles) {
+    const html = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+    assert.match(
+      html,
+      /<a class="social-link" href="https:\/\/t\.me\/Vitalina_Pogorila" target="_blank" rel="noopener noreferrer" aria-label="Telegram Виталины Погорилы">Telegram<\/a>/,
+      `${file} should expose the confirmed Telegram profile`
+    );
+    assert.match(
+      html,
+      /<span class="social-link" aria-disabled="true" title="Ссылка будет добавлена">MAX<\/span><span class="social-link" aria-disabled="true" title="Ссылка будет добавлена">Дзен<\/span>/,
+      `${file} should keep unconfirmed social profiles inactive`
+    );
+  }
+});
+
+test('contact forms include a bot trap and confirmed messenger guidance', async () => {
+  const html = await readFile(new URL('../contacts.html', import.meta.url), 'utf8');
+
+  assert.match(html, /class="form-trap"[^>]*aria-hidden="true"/);
+  assert.match(html, /name="website"[^>]*tabindex="-1"[^>]*autocomplete="off"/);
+  assert.match(html, /напишите Виталине в Telegram/i);
+  assert.doesNotMatch(html, /Ссылки на Telegram и MAX будут добавлены/);
 });
 
 test('services present the four confirmed offers', async () => {

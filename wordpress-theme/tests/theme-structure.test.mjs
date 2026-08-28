@@ -52,6 +52,43 @@ test('functions register supports, menu and module assets', async () => {
   assert.match(style, /\.admin-bar\s+\.site-header/);
 });
 
+test('lead delivery uses server-only SMTP configuration and protected public AJAX', async () => {
+  const modulePath = path.join(THEME, 'inc', 'lead-delivery.php');
+  await access(modulePath);
+
+  const functions = await readFile(path.join(THEME, 'functions.php'), 'utf8');
+  const source = await readFile(modulePath, 'utf8');
+
+  assert.match(functions, /lead-delivery\.php/);
+  assert.match(functions, /wp_localize_script\(/);
+  assert.match(functions, /forma_hotel_lead_config\(\)/);
+  for (const publicField of ['ajaxUrl', 'nonce', 'action', 'messages']) {
+    assert.match(source, new RegExp(`'${publicField}'\\s*=>`));
+  }
+
+  for (const contract of [
+    /wp_ajax_forma_submit_lead/,
+    /wp_ajax_nopriv_forma_submit_lead/,
+    /check_ajax_referer\(\s*'forma_submit_lead'/,
+    /wp_unslash\(/,
+    /sanitize_text_field\(/,
+    /sanitize_email\(/,
+    /sanitize_textarea_field\(/,
+    /esc_url_raw\(/,
+    /wp_mail\(/,
+    /phpmailer_init/,
+    /set_transient\(/,
+    /get_transient\(/,
+    /FORMA_SMTP_USER/,
+    /FORMA_SMTP_PASSWORD/,
+    /FORMA_LEAD_RECIPIENT/,
+    /smtp\.yandex\.ru/,
+    /465/
+  ]) assert.match(source, contract);
+
+  assert.doesNotMatch(source, /define\s*\(\s*['"]FORMA_SMTP_PASSWORD['"]/);
+});
+
 test('native case editor registers a safe plugin-free content model', async () => {
   const casePostTypePath = path.join(THEME, 'inc', 'case-post-type.php');
   const adminScriptPath = path.join(THEME, 'assets', 'js', 'case-admin.js');

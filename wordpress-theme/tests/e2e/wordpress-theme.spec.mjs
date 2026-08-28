@@ -285,3 +285,26 @@ test('modal, FAQ and Cookie controls preserve their interaction contracts', asyn
   await expect(trigger).toBeFocused();
   expect(Math.abs(await page.evaluate(() => window.scrollY) - beforeModal)).toBeLessThanOrEqual(1);
 });
+
+test('public contact form sends a protected lead and restores its idle state', async ({ page }) => {
+  await page.goto('/kontakty/');
+  await dismissCookieBanner(page);
+
+  const form = page.locator('[data-contact-form]');
+  const submit = form.getByRole('button', { name: 'Отправить заявку' });
+  await form.locator('[name="name"]').fill('Тестовый гость');
+  await form.locator('[name="phone"]').fill('+7 900 123-45-67');
+  await form.locator('[name="email"]').fill('guest@example.com');
+  await form.locator('[name="message"]').fill('Проверка отправки заявки в WordPress Playground.');
+  await form.locator('[name="consent"]').check();
+
+  await submit.click();
+  await expect(form.locator('[data-form-status]')).toHaveText(
+    'Заявка отправлена. Свяжемся с вами по указанным контактам'
+  );
+  await expect(submit).toBeEnabled();
+  await expect(submit).not.toHaveAttribute('aria-busy', 'true');
+  await expect(form.locator('[name="name"]')).toHaveValue('');
+  await expect(form.locator('[name="email"]')).toHaveValue('');
+  await expect(form.locator('[name="consent"]')).not.toBeChecked();
+});
