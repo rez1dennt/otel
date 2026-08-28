@@ -134,6 +134,49 @@ test('desktop card actions are centered, bottom-aligned and separated from copy'
   expect(Math.min(...geometry.insightGaps)).toBeGreaterThanOrEqual(12);
 });
 
+test('featured case cards use a balanced responsive grid', async ({ page }) => {
+  for (const width of [1280, 768, 360, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/index.html');
+
+    const geometry = await page.evaluate(() => {
+      const grid = document.querySelector('.project-grid');
+      const cards = [...grid.querySelectorAll('.project-card')];
+      const boxes = cards.map((card) => card.getBoundingClientRect());
+      const images = cards.map((card) => card.querySelector('.image-frame').getBoundingClientRect());
+      const actions = cards.map((card) => card.querySelector('.card-link-cue').getBoundingClientRect());
+      return {
+        grid: grid.getBoundingClientRect().toJSON(),
+        cards: boxes.map((box) => box.toJSON()),
+        images: images.map((box) => box.toJSON()),
+        actions: actions.map((box) => box.toJSON()),
+        titleSizes: cards.map((card) => getComputedStyle(card.querySelector('h3')).fontSize),
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth
+      };
+    });
+
+    const spread = (values) => Math.max(...values) - Math.min(...values);
+    expect(geometry.cards).toHaveLength(3);
+    expect(spread(geometry.cards.map((box) => box.width))).toBeLessThanOrEqual(1);
+    expect(spread(geometry.images.map((box) => box.height))).toBeLessThanOrEqual(1);
+    for (const image of geometry.images) expect(image.height / image.width).toBeCloseTo(0.75, 2);
+    expect(spread(geometry.actions.map((box) => box.height))).toBeLessThanOrEqual(1);
+    expect(geometry.titleSizes).toEqual(geometry.titleSizes.map(() => '22px'));
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth);
+
+    if (width === 1280) {
+      expect(spread(geometry.actions.map((box) => box.bottom))).toBeLessThanOrEqual(1);
+      expect(geometry.actions[0].height).toBeCloseTo(40, 0);
+    }
+    if (width === 768) {
+      const gridCenter = geometry.grid.left + geometry.grid.width / 2;
+      const lastCenter = geometry.cards[2].left + geometry.cards[2].width / 2;
+      expect(Math.abs(lastCenter - gridCenter)).toBeLessThanOrEqual(1);
+    }
+  }
+});
+
 test('detail hero images fill their complete frames at every target width', async ({ page }) => {
   const detailRoutes = [
     '/service.html',
