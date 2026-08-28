@@ -39,6 +39,13 @@ function forma_hotel_bootstrap_site() {
     $errors = array();
     $pages  = array();
 
+    if ( function_exists( 'forma_seed_cases' ) ) {
+        $case_result = forma_seed_cases();
+        if ( ! empty( $case_result['errors'] ) && is_array( $case_result['errors'] ) ) {
+            $errors = array_merge( $errors, $case_result['errors'] );
+        }
+    }
+
     if ( empty( $routes ) ) {
         $errors[] = array(
             'path'    => 'manifest',

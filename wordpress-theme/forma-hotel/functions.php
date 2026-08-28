@@ -21,6 +21,16 @@ if ( file_exists( $forma_case_post_type_file ) ) {
     require_once $forma_case_post_type_file;
 }
 
+$forma_case_content_file = get_theme_file_path( '/inc/case-content.php' );
+if ( file_exists( $forma_case_content_file ) ) {
+    require_once $forma_case_content_file;
+}
+
+$forma_case_bootstrap_file = get_theme_file_path( '/inc/case-bootstrap.php' );
+if ( file_exists( $forma_case_bootstrap_file ) ) {
+    require_once $forma_case_bootstrap_file;
+}
+
 function forma_hotel_setup() {
     add_theme_support( 'title-tag' );
     add_theme_support( 'post-thumbnails' );
@@ -116,11 +126,13 @@ function forma_hotel_render_snapshot_meta() {
         echo '<meta name="description" content="' . esc_attr( $meta['description'] ) . '">' . "\n";
     }
     $canonical_path = isset( $meta['canonical_path'] ) ? $meta['canonical_path'] : '/';
-    $canonical_url  = home_url( $canonical_path );
+    $canonical_url  = isset( $meta['canonical_url'] ) ? $meta['canonical_url'] : home_url( $canonical_path );
     echo '<link rel="canonical" href="' . esc_url( $canonical_url ) . '">' . "\n";
     echo '<meta property="og:url" content="' . esc_url( $canonical_url ) . '">' . "\n";
     echo '<meta property="og:type" content="' . esc_attr( $meta['og_type'] ?? 'website' ) . '">' . "\n";
-    if ( ! empty( $meta['og_image'] ) ) {
+    if ( ! empty( $meta['og_image_url'] ) ) {
+        echo '<meta property="og:image" content="' . esc_url( $meta['og_image_url'] ) . '">' . "\n";
+    } elseif ( ! empty( $meta['og_image'] ) ) {
         echo '<meta property="og:image" content="' . esc_url( get_theme_file_uri( $meta['og_image'] ) ) . '">' . "\n";
     }
     foreach ( $schema as $schema_block ) {

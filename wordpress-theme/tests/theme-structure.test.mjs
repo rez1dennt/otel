@@ -92,6 +92,56 @@ test('native case editor registers a safe plugin-free content model', async () =
   assert.match(adminScript, /data-case-remove/);
 });
 
+test('case seeds and public templates are dynamic and non-destructive', async () => {
+  const bootstrapPath = path.join(THEME, 'inc', 'case-bootstrap.php');
+  const contentPath = path.join(THEME, 'inc', 'case-content.php');
+  const singlePath = path.join(THEME, 'single-forma_case.php');
+  const archivePartPath = path.join(THEME, 'template-parts', 'case-archive.php');
+  const homePartPath = path.join(THEME, 'template-parts', 'home-cases.php');
+  const cardPartPath = path.join(THEME, 'template-parts', 'case-card.php');
+  for (const file of [bootstrapPath, contentPath, singlePath, archivePartPath, homePartPath, cardPartPath]) {
+    await access(file);
+  }
+
+  const functions = await readFile(path.join(THEME, 'functions.php'), 'utf8');
+  const setup = await readFile(path.join(THEME, 'inc', 'theme-setup.php'), 'utf8');
+  const bootstrap = await readFile(bootstrapPath, 'utf8');
+  const content = await readFile(contentPath, 'utf8');
+  const single = await readFile(singlePath, 'utf8');
+
+  assert.match(functions, /case-content\.php/);
+  assert.match(functions, /case-bootstrap\.php/);
+  assert.match(setup, /forma_seed_cases\(\)/);
+  assert.equal((setup.match(/flush_rewrite_rules\(/g) ?? []).length, 1);
+
+  for (const contract of [
+    /inc\/data\/cases\.json/,
+    /_forma_case_seed_id/,
+    /get_posts\(/,
+    /'name'\s*=>\s*\$record\['slug'\]/,
+    /wp_insert_post\(/,
+    /forma_register_case_post_type\(\)/
+  ]) assert.match(bootstrap, contract);
+  assert.doesNotMatch(bootstrap, /wp_update_post|wp_delete_post|delete_post_meta/);
+
+  assert.match(content, /new WP_Query\(/);
+  assert.match(content, /_forma_case_featured_rank/);
+  assert.match(content, /get_the_post_thumbnail_url/);
+  assert.match(content, /forma_case_single_schema/);
+  assert.match(content, /forma_case_archive_schema/);
+  assert.match(content, /template_redirect/);
+  assert.match(content, /wp_safe_redirect\(\s*home_url\(\s*'\/kejsy\/'/);
+
+  assert.match(single, /get_header\(\)/);
+  assert.match(single, /forma_case_get_fields/);
+  assert.match(single, /<main[^>]*id="main-content"/);
+  assert.match(single, /id="context"/);
+  assert.match(single, /id="task"/);
+  assert.match(single, /id="work"/);
+  assert.match(single, /id="result"/);
+  assert.match(single, /get_footer\(\)/);
+});
+
 test('fallback index uses shared shell and one main landmark', async () => {
   const index = await readFile(path.join(THEME, 'index.php'), 'utf8');
   assert.match(index, /get_header\(\)/);
