@@ -1291,7 +1291,7 @@ a:hover .image-frame img {
   text-transform: uppercase;
 }
 
-.footer-grid a,
+.footer-grid a:not(.social-link),
 .footer-grid button,
 .footer-grid p {
   color: var(--color-text-muted);

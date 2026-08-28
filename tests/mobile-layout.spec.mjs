@@ -368,3 +368,37 @@ test('article typography stays compact on mobile and unchanged on desktop', asyn
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewportWidth);
   }
 });
+
+test('social controls stay logo-only when Telegram is an anchor', async ({ page }) => {
+  for (const width of [1280, 768, 360, 320]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/contacts.html');
+
+    const controls = await page.locator('.footer-contact .social-link').evaluateAll((elements) =>
+      elements.map((element) => {
+        const style = getComputedStyle(element);
+        const icon = getComputedStyle(element, '::before');
+        return {
+          fontSize: style.fontSize,
+          lineHeight: style.lineHeight,
+          overflow: style.overflow,
+          iconWidth: icon.width,
+          iconHeight: icon.height,
+          iconImage: icon.backgroundImage,
+          ariaLabel: element.getAttribute('aria-label')
+        };
+      })
+    );
+
+    expect(controls).toHaveLength(3);
+    for (const [index, control] of controls.entries()) {
+      expect.soft(control.fontSize, `${width}px social ${index + 1} font`).toBe('0px');
+      expect.soft(control.lineHeight, `${width}px social ${index + 1} line`).toBe('0px');
+      expect.soft(control.overflow, `${width}px social ${index + 1} overflow`).toBe('hidden');
+      expect.soft(control.iconWidth, `${width}px social ${index + 1} icon width`).toBe('20px');
+      expect.soft(control.iconHeight, `${width}px social ${index + 1} icon height`).toBe('20px');
+      expect.soft(control.iconImage, `${width}px social ${index + 1} icon`).toContain('social-');
+    }
+    expect(controls[0].ariaLabel).toBe('Telegram Виталины Погорилы');
+  }
+});
